@@ -11,6 +11,15 @@ SYS_NIXOS_CONFIG_LOCATION="/etc/nixos/configuration.nix"
 function update(){
 	local source_file=$1
 	local destination_file=$2
+	
+	if [[ ! -w $source_file ]]; then
+		exit_with_message 1 "insufficent privilage to source file"
+	fi
+
+	if [[ ! -w $destination_file ]]; then
+		exit_with_message 1 "insufficent privilage to destination file"
+	fi
+
 	local source_temp=$(mktemp /tmp/update.XXXXXXXXXXXXXXXXX)
 	
 	cp -f $source_file $source_temp
@@ -19,12 +28,12 @@ function update(){
 		rm $source_temp
 		exit_with_message 1 "error during backup copy"
 	fi
-
+	
 	cp -f $source_temp $destination_file
 	rm $source_temp
 	
 	if [ $? -ne 0 ];then
-		exit_with_message 1 "error during copy"
+		exit_with_message 1 "error during destination copy"
 	fi
 	
 }
