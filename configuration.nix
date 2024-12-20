@@ -32,6 +32,7 @@ in
     starship
     tree
     git
+    make
   ];
   
   programs.fish.enable = true;
