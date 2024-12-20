@@ -9,10 +9,24 @@ BASE_SOURCE_CONFIG_LOCATION="./configuration.nix"
 SYS_NIXOS_CONFIG_LOCATION="/etc/nixos/configuration.nix"
 
 function update(){
-	local source=$1
-	local destination=$2
+	local source_file=$1
+	local destination_file=$2
+	local source_temp=$(mktemp /tmp/update.XXXXXXXXXXXXXXXXX)
+	
+	cp -f $source_file $source_temp
+	
+	if [ $? -ne 0 ];then
+		rm $source_temp
+		exit_with_message 1 "error during backup copy"
+	fi
 
-	cp -f $source $destination
+	cp -f $source_temp $destination_file
+	rm $source_temp
+	
+	if [ $? -ne 0 ];then
+		exit_with_message 1 "error during copy"
+	fi
+	
 }
 
 function exit_with_message(){

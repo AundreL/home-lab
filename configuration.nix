@@ -32,7 +32,7 @@ in
     starship
     tree
     git
-    make
+    gnumake
   ];
   
   programs.fish.enable = true;
