@@ -17,6 +17,9 @@ in
       (import "${home-manager}/nixos")
     ];
   
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nixpkgs.config.allowUnfree = true;
+  
   networking.hostName = "nixos";
   time.timeZone = "Canada/Eastern";
 
@@ -24,8 +27,6 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
     fish
