@@ -3,18 +3,44 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
-{ 
+let
+	home-manager = builtins.fetchTarball {
+		url = "https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz";
+		sha256 = "0b41b251gxbrfrqplp2dkxv00x8ls5x5b3n5izs4nxkcbhkjjadz";
+
+	};
+in
+{
+	imports =
+    [
+		(import "${home-manager}/nixos")
+    ];
+  
+	# Use the systemd-boot EFI boot loader.
+	boot.loader.efi.canTouchEfiVariables = false;
+	boot.loader.systemd-boot.enable = true;
+	
+	networking.hostName = "dev-box";
+	time.timeZone = "Canada/Eastern";
+	
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];
 	nixpkgs.config.allowUnfree = true;
 
 	environment.systemPackages = with pkgs; [
-		tree
-		git
-		gnumake
+		fish
+		starship
 	];
   
-	services.openssh.enable = true;
- 
+	programs.fish.enable = true;
+	programs.starship.enable = true;
+
+	users.users.aundre = {
+		isNormalUser = true;
+		home = "/home/aundre";
+		extraGroups = [ "wheel" "networkmanager" ]; 
+		shell = pkgs.fish;
+	};
+  
 	# This option defines the first version of NixOS you have installed on this particular machine,
 	# and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
 	#

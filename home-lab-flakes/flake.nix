@@ -14,7 +14,7 @@
 		nixosConfigurations.dev-box = nixpkgs.lib.nixosSystem {
 			system = "x86_64-linux";
 			modules = [
-				./configuration.nix ./hosts/dev-box/hardware-configuration.nix 
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix ./hosts/dev-box/configuration.nix
 			];
 		};
 
