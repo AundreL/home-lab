@@ -12,16 +12,31 @@
 	in
 	{
 		nixosConfigurations.dev-box = nixpkgs.lib.nixosSystem {
+			system = "x86_64-linux";
 			modules = [
-				./configuration.nix
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
 			];
 		};
-
-		packages.x86_64-linux.hello = pkgs.hello;
-		packages.x86_64-linux.default = pkgs.hello;
-	
-		devShells.x86_64-linux.default = pkgs.mkShell {
-			buildInputs = [ pkgs.neovim pkgs.vim ];
+		
+		nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
+			system = "x86_64-linux";
+			modules = [
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
+			];
+		};
+		
+		nixosConfigurations.lab-control-node = nixpkgs.lib.nixosSystem {
+			system = "x86_64-linux";
+			modules = [
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
+			];
+		};
+		
+		nixosConfigurations.lab-worker-node = nixpkgs.lib.nixosSystem {
+			system = "x86_64-linux";
+			modules = [
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
+			];
 		};
 	};
 }
