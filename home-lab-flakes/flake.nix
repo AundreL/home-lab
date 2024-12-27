@@ -14,29 +14,10 @@
 		nixosConfigurations.dev-box = nixpkgs.lib.nixosSystem {
 			system = "x86_64-linux";
 			modules = [
-				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix 
 			];
 		};
-		
-		nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
-			system = "x86_64-linux";
-			modules = [
-				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
-			];
-		};
-		
-		nixosConfigurations.lab-control-node = nixpkgs.lib.nixosSystem {
-			system = "x86_64-linux";
-			modules = [
-				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
-			];
-		};
-		
-		nixosConfigurations.lab-worker-node = nixpkgs.lib.nixosSystem {
-			system = "x86_64-linux";
-			modules = [
-				./configuration.nix ./hosts/dev-box/hardware-configuration.nix
-			];
-		};
+
+		#implement dev-wsl, control-node, worker-node
 	};
 }
