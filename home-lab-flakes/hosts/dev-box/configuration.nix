@@ -48,6 +48,15 @@ in
 			userEmail = "aundre@gmail.com";
 		};
 		
+		home.file = {
+			".config/nvim" = {
+				source = ../../../dotfiles/nvim;
+				recursive = true;
+			};
+		};
+
+		programs.home-manager.enable = true;
+
 		home.stateVersion = "24.11";
 	};
 	# This option defines the first version of NixOS you have installed on this particular machine,
