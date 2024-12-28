@@ -43,8 +43,9 @@ in
 	
 	home-manager.users.aundre = {
 		programs.git = {
+			enable = true;
 			userName = "Aundre Lattie";
-			userEmail = "newmain@gmail.com";
+			userEmail = "aundre@gmail.com";
 		};
 		
 		home.stateVersion = "24.11";
