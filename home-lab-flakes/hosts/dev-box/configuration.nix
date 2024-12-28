@@ -54,6 +54,12 @@ in
 				recursive = true;
 			};
 		};
+		
+		home.file = {
+			".ssh/config" = {
+				source = ../../../dotfiles/ssh-config;
+			};
+		};
 
 		programs.home-manager.enable = true;
 
