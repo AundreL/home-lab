@@ -60,6 +60,13 @@ in
 				source = ../../../dotfiles/ssh-config;
 			};
 		};
+		
+		home.file = {
+			".config/fish" = {
+				source = ../../../dotfiles/fish;
+				recursive = true;
+			};
+		};
 
 		programs.home-manager.enable = true;
 

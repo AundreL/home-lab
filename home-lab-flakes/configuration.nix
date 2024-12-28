@@ -8,10 +8,11 @@
 	nixpkgs.config.allowUnfree = true;
 
 	environment.systemPackages = with pkgs; [
-		neovim	
-		tree
-		git
 		gnumake
+		git
+		neovim
+		tmux
+		tree
 	];
   
 	services.openssh.enable = true;
