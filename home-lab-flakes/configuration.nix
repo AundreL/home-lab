@@ -16,8 +16,6 @@
 		tree
 	];
 
-	programs.command-not-found.dbPath = "<your-absolute-path-here>";
-
 	services.openssh.enable = true;
  
 	# This option defines the first version of NixOS you have installed on this particular machine,

@@ -69,12 +69,18 @@ in
 		};
 		
 		home.file = {
+			".config/starship.toml" = {
+				source = ../../../dotfiles/starship.toml;
+			};
+		};
+
+		home.file = {
 			".config/zellij" = {
 				source = ../../../dotfiles/zellij;
 				recursive = true;
 			};
 		};
-
+		
 		programs.home-manager.enable = true;
 
 		home.stateVersion = "24.11";

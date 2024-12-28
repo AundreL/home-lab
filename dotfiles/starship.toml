@@ -1,0 +1,11 @@
+[hostname]
+ssh_symbol = "\ue795 "
+
+[git_branch]
+symbol = "\ue702 "
+
+[os.symbols]
+NisOS = "\ue843 "
+
+[package]
+symbol = "\ueb29 "
