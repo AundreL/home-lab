@@ -67,6 +67,13 @@ in
 				recursive = true;
 			};
 		};
+		
+		home.file = {
+			".config/zellij" = {
+				source = ../../../dotfiles/zellij;
+				recursive = true;
+			};
+		};
 
 		programs.home-manager.enable = true;
 

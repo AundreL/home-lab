@@ -12,6 +12,7 @@
 		git
 		neovim
 		tmux
+		zellij
 		tree
 	];
   
