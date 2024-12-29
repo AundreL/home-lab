@@ -29,6 +29,7 @@ in
 	environment.systemPackages = with pkgs; [
 		fish
 		starship
+        stylua
 	];
   
 	programs.fish.enable = true;
