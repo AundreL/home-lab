@@ -5,8 +5,8 @@
 { config, lib, pkgs, ... }:
 let
 	home-manager = builtins.fetchTarball {
-		url = "https://github.com/nix-community/home-manager/archive/release-24.11.tar.gz";
-		sha256 = "0b41b251gxbrfrqplp2dkxv00x8ls5x5b3n5izs4nxkcbhkjjadz";
+		url = "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+		sha256 = "1vklmr0vzhplcjcqg19v66c1swg3xcgw96ry90dyd4hl2cb9j80b";
 
 	};
 in
@@ -42,6 +42,9 @@ in
 	};
 	
 	home-manager.users.aundre = {
+		programs.neovim.enable = true;
+		programs.neovim.defaultEditor = true;
+
 		programs.git = {
 			enable = true;
 			userName = "Aundre Lattie";

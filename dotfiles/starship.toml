@@ -5,7 +5,7 @@ ssh_symbol = "\ue795 "
 symbol = "\ue702 "
 
 [os.symbols]
-NisOS = "\ue843 "
+NixOS = "\ue843 "
 
 [package]
 symbol = "\ueb29 "

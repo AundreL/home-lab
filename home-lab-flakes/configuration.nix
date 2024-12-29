@@ -6,7 +6,7 @@
 { 
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];
 	nixpkgs.config.allowUnfree = true;
-
+	
 	environment.systemPackages = with pkgs; [
 		gnumake
 		git
@@ -15,7 +15,7 @@
 		zellij
 		tree
 	];
-
+	
 	services.openssh.enable = true;
  
 	# This option defines the first version of NixOS you have installed on this particular machine,
