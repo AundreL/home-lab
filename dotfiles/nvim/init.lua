@@ -97,12 +97,18 @@ require("lazy").setup({
 		{
 			"stevearc/conform.nvim",
 			opts = {
-				formatters_by_ft = {
-					lua = { "stylua" },
+				default_format_opts = {
+					timeout_ms = 3000,
+					async = false,
+					quiet = false,
+					lsp_format = "fallback",
 				},
 				format_on_save = {
 					timeout_ms = 500,
 					lsp_format = "fallback",
+				},
+				formatters_by_ft = {
+					lua = { "stylua" },
 				},
 			},
 		},
@@ -113,7 +119,6 @@ require("lazy").setup({
 })
 
 local format_group = vim.api.nvim_create_augroup("format_on_write", { clear = true })
-
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = format_group,
 	desc = "use formatter on write",
