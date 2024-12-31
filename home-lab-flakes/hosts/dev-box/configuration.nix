@@ -30,6 +30,7 @@ in
 		fish
 		starship
         stylua
+        kdlfmt
 	];
   
 	programs.fish.enable = true;

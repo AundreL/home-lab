@@ -109,9 +109,11 @@ require("lazy").setup({
 				},
 				formatters_by_ft = {
 					lua = { "stylua" },
+					kdl = { "kdlfmt" },
 				},
 			},
 		},
+		{ "imsnif/kdl.vim" },
 		install = {},
 		-- automatically check for plugin updates
 		checker = { enabled = true },
