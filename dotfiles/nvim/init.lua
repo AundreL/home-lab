@@ -121,6 +121,7 @@ require("lazy").setup({
 })
 
 local format_group = vim.api.nvim_create_augroup("format_on_write", { clear = true })
+
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = format_group,
 	desc = "use formatter on write",
@@ -131,6 +132,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 vim.opt.termguicolors = true
-vim.cmd([[highlight Normal guibg=#282828]])
-vim.cmd([[highlight MsgArea guibg=#282828]])
-vim.cmd([[highlight BufferLine guibg=#282828]])
+--vim.cmd([[highlight Normal guibg=#282828]])
+--vim.cmd([[highlight MsgArea guibg=#282828]])
+--vim.cmd([[highlight BufferLine guibg=#282828]])

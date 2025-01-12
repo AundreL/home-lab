@@ -14,6 +14,8 @@
 		tmux
 		zellij
 		tree
+        cargo
+        rustup
 	];
 	
 	services.openssh.enable = true;
