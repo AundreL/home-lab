@@ -17,7 +17,13 @@
 				./configuration.nix ./hosts/dev-box/hardware-configuration.nix ./hosts/dev-box/configuration.nix
 			];
 		};
-
-		#implement dev-wsl, control-node, worker-node
+        
+        nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+                ./configuration.nix ./hosts/dev-box/configuration.nix
+            ];
+        }
+		#implement control-node, worker-node
 	};
 }

@@ -1,23 +1,3 @@
-vim.o.number = true
-vim.o.mouse = ""
-vim.o.tabstop = 4
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
-vim.o.expandtab = true
-vim.o.relativenumber = true
-
-vim.g.mapleader = " "
-
-vim.api.nvim_set_keymap("n", "<Leader>rn", "<Cmd>set relativenumber!<CR>", { noremap = true, silent = true })
-
-local restore_cursor_augroup = vim.api.nvim_create_augroup("restore_cursor_shape_on_exit", { clear = true })
-
-vim.api.nvim_create_autocmd({ "VimLeave" }, {
-	group = restore_cursor_augroup,
-	desc = "restore the cursor shape on exit of neovim",
-	command = "set guicursor=a:ver20",
-})
-
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -39,9 +19,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -114,10 +91,37 @@ require("lazy").setup({
 			},
 		},
 		{ "imsnif/kdl.vim" },
+		{ "rust-lang/rust.vim" },
+		{
+			"mrcjkb/rustaceanvim",
+			version = "^5",
+			lazy = false,
+		},
 		install = {},
 		-- automatically check for plugin updates
 		checker = { enabled = true },
 	},
+})
+
+vim.o.number = true
+vim.o.mouse = ""
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
+vim.o.expandtab = true
+vim.o.relativenumber = true
+
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+
+vim.api.nvim_set_keymap("n", "<leader>rn", "<cmd>set relativenumber!<cr>", { noremap = true, silent = true })
+
+local restore_cursor_augroup = vim.api.nvim_create_augroup("restore_cursor_shape_on_exit", { clear = true })
+
+vim.api.nvim_create_autocmd({ "vimleave" }, {
+	group = restore_cursor_augroup,
+	desc = "restore the cursor shape on exit of neovim",
+	command = "set guicursor=a:ver20",
 })
 
 local format_group = vim.api.nvim_create_augroup("format_on_write", { clear = true })
@@ -131,6 +135,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
+local bufnr = vim.api.nvim_get_current_buf()
+vim.keymap.set("n", "<leader>a", function()
+	vim.cmd.RustLsp("codeAction")
+end, { silent = true, buffer = bufnr })
 vim.opt.termguicolors = true
 --vim.cmd([[highlight Normal guibg=#282828]])
 --vim.cmd([[highlight MsgArea guibg=#282828]])
