@@ -3,23 +3,91 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
-{ 
+let
+	home-manager = builtins.fetchTarball {
+		url = "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+		sha256 = "0kzk59wh1gnvk31dagfyf41a12wqldm8l5vnkzcix74nmz0qdrk4";
+	};
+in
+{
+	imports =
+    [
+		(import "${home-manager}/nixos")
+		<nixos-wsl/modules>
+    ];
+  	
+	wsl.enable = true;
+	wsl.defaultUser = "aundre";
+	networking.hostName = "dev-wsl";
+	time.timeZone = "Canada/Eastern";
+	
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];
 	nixpkgs.config.allowUnfree = true;
-	
+
 	environment.systemPackages = with pkgs; [
-		gnumake
-		git
-		neovim
-		tmux
-		zellij
-		tree
-        	cargo
-        	rustup
+		fish
+		starship
+        stylua
+        kdlfmt
 	];
+  
+	programs.fish.enable = true;
+	programs.starship.enable = true;
+
+	users.users.aundre = {
+		isNormalUser = true;
+		home = "/home/aundre";
+		extraGroups = [ "wheel" "networkmanager" ]; 
+		shell = pkgs.fish;
+	};
 	
-	services.openssh.enable = true;
- 
+	home-manager.users.aundre = {
+		programs.neovim.enable = true;
+		programs.neovim.defaultEditor = true;
+
+		programs.git = {
+			enable = true;
+			userName = "Aundre Lattie";
+			userEmail = "aundre@gmail.com";
+		};
+		
+		home.file = {
+			".config/nvim" = {
+				source = ../../../dotfiles/nvim;
+				recursive = true;
+			};
+		};
+		
+		home.file = {
+			".ssh/config" = {
+				source = ../../../dotfiles/ssh-config;
+			};
+		};
+		
+		home.file = {
+			".config/fish" = {
+				source = ../../../dotfiles/fish;
+				recursive = true;
+			};
+		};
+		
+		home.file = {
+			".config/starship.toml" = {
+				source = ../../../dotfiles/starship.toml;
+			};
+		};
+
+		home.file = {
+			".config/zellij" = {
+				source = ../../../dotfiles/zellij;
+				recursive = true;
+			};
+		};
+		
+		programs.home-manager.enable = true;
+
+		home.stateVersion = "24.05";
+	};
 	# This option defines the first version of NixOS you have installed on this particular machine,
 	# and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
 	#
