@@ -5,7 +5,7 @@
 { config, lib, pkgs, ... }:
 let
 	home-manager = builtins.fetchTarball {
-		url = "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+		url = "https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz";
 		sha256 = "1vklmr0vzhplcjcqg19v66c1swg3xcgw96ry90dyd4hl2cb9j80b";
 
 	};
@@ -108,6 +108,6 @@ in
 	# For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion . 
 
 	# Do not modify or remove this configuation setting, above comment explains why.
-	system.stateVersion = "24.11";
+	system.stateVersion = "24.05";
 }
 
