@@ -5,8 +5,8 @@
 { config, lib, pkgs, ... }:
 let
 	home-manager = builtins.fetchTarball {
-		url = "https://github.com/nix-community/home-manager/archive/master.tar.gz";
-		sha256 = "0kzk59wh1gnvk31dagfyf41a12wqldm8l5vnkzcix74nmz0qdrk4";
+		url = "https://github.com/nix-community/home-manager/archive/release-24.05.tar.gz";
+		sha256 = "00wp0s9b5nm5rsbwpc1wzfrkyxxmqjwsc1kcibjdbfkh69arcpsn";
 	};
 in
 {
@@ -17,77 +17,13 @@ in
     ];
   	
 	wsl.enable = true;
+    
+    # run this sequence after to resolve erorr that occurs when you change default user
+    # wsl -t nixos
+    # wsl -d nixos --user root exit
+    # wsl -t nixos
 	wsl.defaultUser = "aundre";
-	networking.hostName = "dev-wsl";
-	time.timeZone = "Canada/Eastern";
 	
-	nix.settings.experimental-features = [ "nix-command" "flakes" ];
-	nixpkgs.config.allowUnfree = true;
-
-	environment.systemPackages = with pkgs; [
-		fish
-		starship
-        stylua
-        kdlfmt
-	];
-  
-	programs.fish.enable = true;
-	programs.starship.enable = true;
-
-	users.users.aundre = {
-		isNormalUser = true;
-		home = "/home/aundre";
-		extraGroups = [ "wheel" "networkmanager" ]; 
-		shell = pkgs.fish;
-	};
-	
-	home-manager.users.aundre = {
-		programs.neovim.enable = true;
-		programs.neovim.defaultEditor = true;
-
-		programs.git = {
-			enable = true;
-			userName = "Aundre Lattie";
-			userEmail = "aundre@gmail.com";
-		};
-		
-		home.file = {
-			".config/nvim" = {
-				source = ../../../dotfiles/nvim;
-				recursive = true;
-			};
-		};
-		
-		home.file = {
-			".ssh/config" = {
-				source = ../../../dotfiles/ssh-config;
-			};
-		};
-		
-		home.file = {
-			".config/fish" = {
-				source = ../../../dotfiles/fish;
-				recursive = true;
-			};
-		};
-		
-		home.file = {
-			".config/starship.toml" = {
-				source = ../../../dotfiles/starship.toml;
-			};
-		};
-
-		home.file = {
-			".config/zellij" = {
-				source = ../../../dotfiles/zellij;
-				recursive = true;
-			};
-		};
-		
-		programs.home-manager.enable = true;
-
-		home.stateVersion = "24.05";
-	};
 	# This option defines the first version of NixOS you have installed on this particular machine,
 	# and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
 	#
