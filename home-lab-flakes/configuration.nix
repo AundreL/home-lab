@@ -9,6 +9,7 @@
 	
 	environment.systemPackages = with pkgs; [
 		gnumake
+        gcc
 		git
 		neovim
 		tmux

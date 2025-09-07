@@ -23,7 +23,7 @@
             modules = [
                 ./configuration.nix ./hosts/dev-box/configuration.nix
             ];
-        }
+        };
 		#implement control-node, worker-node
 	};
 }
