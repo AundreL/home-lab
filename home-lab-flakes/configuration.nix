@@ -14,9 +14,7 @@
 		neovim
 		tmux
 		zellij
-		tree
-        cargo
-        rustup
+        tree
 	];
 	
 	services.openssh.enable = true;
