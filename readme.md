@@ -6,3 +6,14 @@ configuration files and documentation for homelab
     cd home-lab-flakes
     sudo nixos-rebuild switch --flake ".#dev-box"
 ```
+
+# initial setup installing nixos
+
+copy install file move 
+``` bash
+sudo cp /install/configuration /etc/nixos/configuration.nix
+```
+
+```bash
+    sudo nixos-rebuild switch
+```
