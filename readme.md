@@ -15,5 +15,5 @@ sudo cp /install/configuration /etc/nixos/configuration.nix
 ```
 
 ```bash
-    sudo nixos-rebuild switch
+sudo nixos-rebuild switch
 ```
