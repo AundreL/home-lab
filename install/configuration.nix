@@ -8,4 +8,11 @@
     ports = [ 22 ];
     passwordAuthentication  = true;
   };
+
+  environment.systemPackages = with pkgs; [
+    git
+    neovim
+    tmux
+    tree
+  ];
 }
