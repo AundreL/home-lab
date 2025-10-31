@@ -15,6 +15,7 @@
 		tmux
 		zellij
         tree
+        python3
 	];
 	
 	services.openssh.enable = true;
