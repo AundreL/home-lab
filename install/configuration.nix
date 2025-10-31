@@ -10,9 +10,12 @@
 
         # Use the systemd-boot EFI boot loader.
         boot.loader.systemd-boot.enable = true;
-        boot.loader.efi.canTouchEfiVariables = true;
+        boot.loader.efi.canTouchEfiVariables = false;
+
+        time.timeZone = "Canada/Eastern";
 
         nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
         nixpkgs.config.allowUnfree = true;
 
         environment.systemPackages = with pkgs; [
@@ -26,7 +29,11 @@
                 python3
         ];
 
-        services.openssh.enable = true;
+        services.openssh = {
+            enable = true;
+            ports = [ 22 ];
+            passwordAuthentication = true;
+        };
 
         # This option defines the first version of NixOS you have installed on this particular machine,
         # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
