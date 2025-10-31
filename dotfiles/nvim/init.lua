@@ -19,7 +19,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-
 -- Setup lazy.nvim
 require("lazy").setup({
 	spec = {
@@ -32,8 +31,11 @@ require("lazy").setup({
 				keymap = { preset = "default" },
 
 				appearance = {
-					use_nvim_cmp_as_default = true,
+					-- use_nvim_cmp_as_default = true,
 					nerd_font_variant = "mono",
+				},
+				completion = {
+					documentation = { auto_show = false },
 				},
 				sources = {
 					default = { "lsp", "path", "snippets", "buffer" },
@@ -90,6 +92,7 @@ require("lazy").setup({
 				},
 			},
 		},
+		{ "voldikss/vim-floaterm" },
 		{ "imsnif/kdl.vim" },
 		{ "rust-lang/rust.vim" },
 		{
@@ -115,6 +118,8 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 vim.api.nvim_set_keymap("n", "<leader>rn", "<cmd>set relativenumber!<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<F2>", ":FloatermToggle<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("t", "<F2>", "<c-\\><c-n>:FloatermToggle<cr>", { noremap = true, silent = true })
 
 local restore_cursor_augroup = vim.api.nvim_create_augroup("restore_cursor_shape_on_exit", { clear = true })
 

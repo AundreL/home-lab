@@ -9,13 +9,15 @@
 	
 	environment.systemPackages = with pkgs; [
 		gnumake
+        gcc
 		git
 		neovim
 		tmux
 		zellij
-		tree
-        	cargo
-        	rustup
+        cargo
+        rustup
+        tree
+        python3
 	];
 	
 	services.openssh.enable = true;
