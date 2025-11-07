@@ -1,11 +1,13 @@
 { config, pkgs, ... }:
-
+let
+    setup-script = (builtins.readFile ./setup.sh);
+in
 {
     imports = [
         <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
         <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
     ];
-
+ 
     i18n.supportedLocales = [
         "en_US.UTF-8/UTF-8"
     ];
@@ -30,7 +32,7 @@
     
     environment.etc."/home/nixost/setup.sh" = {
         mode = "0770";
-        text = ''test content'';
+        text = setup-script;
     };
 
     environment.systemPackages = with pkgs; [
