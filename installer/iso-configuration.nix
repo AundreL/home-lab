@@ -30,17 +30,19 @@ in
         packages = with pkgs; [];
     };
     
-    environment.etc."/home/nixost/setup.sh" = {
+    environment.etc."/setup/setup.sh" = {
         mode = "0770";
         text = setup-script;
     };
 
     environment.systemPackages = with pkgs; [
         git
+        make
         fish
         neovim
         wget
         curl
+        python3
     ];
 
     programs.fish.enable = true;
