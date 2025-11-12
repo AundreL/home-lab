@@ -40,11 +40,12 @@ in
 
     environment.systemPackages = with pkgs; [
         git
-        fish
-        neovim
+        gnumake
         wget
         curl
         python3
+        fish
+        neovim
     ];
 
     programs.fish.enable = true;
