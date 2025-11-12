@@ -1,5 +1,4 @@
 { config, lib, pkgs, ... }:{
-    networking.hostName = "dev-wsl";
     time.timeZone = "Canada/Eastern";
     
     nix.settings.experimental-features = [ "nix-command" "flakes" ];

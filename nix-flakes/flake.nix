@@ -25,6 +25,13 @@
             ];
         };
 
+        nixosConfigurations.iso-installer = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+                ./configuration.nix ./hosts/iso-installer/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
+            ];
+        };
+
         #implement control-node, worker-node
 	};
 }

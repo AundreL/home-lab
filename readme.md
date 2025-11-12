@@ -5,6 +5,12 @@ configuration files and documentation for homelab
 # setup nixos for dev-box
 cd home-lab-flakes
 sudo nixos-rebuild switch --flake ".#dev-box"
+sudo nixos-rebuild switch --flake ".#dev-wsl"
+```
+
+# build custom iso
+``` bash
+nix build .#iso-installer"
 ```
 
 # initial setup installing nixos

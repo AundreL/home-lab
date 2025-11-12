@@ -14,6 +14,9 @@ in
 
     i18n.defaultLocale = "en_US.UTF-8";
 
+    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    nixpkgs.config.allowUnfree = true;
+
     security.sudo.wheelNeedsPassword = false;
 
     users.users.nixos = {
@@ -30,7 +33,7 @@ in
         packages = with pkgs; [];
     };
     
-    environment.etc."/setup/setup.sh" = {
+    environment.etc."../../../installer/setup.sh" = {
         mode = "0770";
         text = setup-script;
     };

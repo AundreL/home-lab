@@ -15,7 +15,8 @@ in
 		(import "${home-manager}/nixos")
 		<nixos-wsl/modules>
     ];
-  	
+    
+    networking.hostName = "dev-wsl";
 	wsl.enable = true;
     
     # run this sequence after to resolve erorr that occurs when you change default user
