@@ -1,13 +1,13 @@
 { config, pkgs, ... }:
 let
-    setup-script = (builtins.readFile ./setup.sh);
+    setup-script = (builtins.readFile ../../../installer/setup.sh);
 in
 {
     imports = [
         <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
         <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
     ];
- 
+     
     i18n.supportedLocales = [
         "en_US.UTF-8/UTF-8"
     ];
@@ -33,14 +33,13 @@ in
         packages = with pkgs; [];
     };
     
-    environment.etc."../../../installer/setup.sh" = {
+    environment.etc."setup/setup.sh" = {
         mode = "0770";
         text = setup-script;
     };
 
     environment.systemPackages = with pkgs; [
         git
-        make
         fish
         neovim
         wget

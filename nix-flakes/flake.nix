@@ -2,7 +2,7 @@
 	description = "home lab flake configuration";
 
 	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
 		home-manager.url = "github:nix-community/home-manager";
 	};
 
@@ -28,7 +28,7 @@
         nixosConfigurations.iso-installer = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
-                ./configuration.nix ./hosts/iso-installer/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
+                ./hosts/iso-installer/configuration.nix
             ];
         };
 
