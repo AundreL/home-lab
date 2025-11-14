@@ -1,6 +1,5 @@
 { config, pkgs, ... }:
 let
-    setup-script = (builtins.readFile ../../../installer/setup.sh);
 in
 {
     imports = [
@@ -33,9 +32,11 @@ in
         packages = with pkgs; [];
     };
     
-    environment.etc."setup/setup.sh" = {
-        mode = "0770";
-        text = setup-script;
+    environment.etc = {
+        "scripts" = {
+            mode = "0600";
+            source = ../../../scripts;
+        };
     };
 
     environment.systemPackages = with pkgs; [
