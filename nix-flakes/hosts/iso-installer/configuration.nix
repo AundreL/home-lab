@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
 let
+    kube-setup = ( builtins.readFile ../../../scripts/nixos-kube-node-setup-script.sh );
+    dev-box-setup = ( builtins.readFile ../../../scripts/nixos-dev-box-setup-script.sh );
 in
 {
     imports = [
@@ -33,12 +35,17 @@ in
     };
     
     environment.etc = {
-        "scripts" = {
+        "scripts/kube-node-setup.sh" = {
             mode = "0600";
-            source = ../../../scripts;
+            text = kube-setup;
+        };
+
+        "scripts/dev-box-setup.sh" = {
+            mode = "0600";
+            text = dev-box-setup;
         };
     };
-
+ 
     environment.systemPackages = with pkgs; [
         git
         gnumake
@@ -56,7 +63,21 @@ in
         ports = [ 22 ];
         passwordAuthentication = true;
     };
+    
+    systemd.tmpfiles.settings."scripts" = {
+        "/home/nixos/scripts".d = {
+           mode = "0755";
+           user = "nixos";
+           group = "nixos";
+        };
+    };
 
+    #isoImage.contents = [
+    #    { 
+    #        source = ../../../scripts;
+    #        target = /home/nixos/scripts;
+    #    }
+    #];
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
     # on your system were taken. It‘s perfectly fine and recommended to leave
