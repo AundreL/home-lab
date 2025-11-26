@@ -65,19 +65,21 @@ in
     };
     
     systemd.tmpfiles.settings."scripts" = {
-        "/home/nixos/scripts".d = {
-           mode = "0755";
-           user = "nixos";
-           group = "nixos";
+        "/etc/tools".d = {
+           mode = "0600";
+           user = "root";
+           group = "root";
         };
     };
 
-    #isoImage.contents = [
-    #    { 
-    #        source = ../../../scripts;
-    #        target = /home/nixos/scripts;
-    #    }
-    #];
+    isoImage.contents = [
+        { 
+            source = /home/aundre/home-lab/scripts/nixos-dev-box-setup-script.sh;
+            #target = "/etc/tools/t-1.sh";
+            target = "/etc/now";
+        }
+    ];
+
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
     # on your system were taken. It‘s perfectly fine and recommended to leave
