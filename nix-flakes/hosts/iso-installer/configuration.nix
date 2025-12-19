@@ -1,5 +1,29 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
+    
+    t-source = ../../test.sh;
+
+    hello-app = derivation {
+        name = "hello-app";
+        system = builtins.currentSystem;
+        builder = "${pkgs.bash}/bin/bash";
+        args = [
+            "-c"
+            ''
+                export PATH=$PATH:${pkgs.coreutils}/bin
+                mkdir -p $out/bin
+                echo '#!${pkgs.bash}/bin/bash' > $out/bin/hello.sh
+                echo 'echo "hello, world!"' >> $out/bin/hello.sh
+                
+                chmod +x $out/bin/hello.sh
+
+                #cp ${t-source} $out/bin/test.sh
+                #chmod +x $out/bin/test.sh
+            ''
+        ];
+
+    };
+
     kube-setup = ( builtins.readFile ../../../scripts/nixos-kube-node-setup-script.sh );
     dev-box-setup = ( builtins.readFile ../../../scripts/nixos-dev-box-setup-script.sh );
 in
@@ -45,7 +69,7 @@ in
             text = dev-box-setup;
         };
     };
- 
+    
     environment.systemPackages = with pkgs; [
         git
         gnumake
@@ -54,6 +78,7 @@ in
         python3
         fish
         neovim
+        hello-app
     ];
 
     programs.fish.enable = true;
@@ -63,22 +88,6 @@ in
         ports = [ 22 ];
         passwordAuthentication = true;
     };
-    
-    systemd.tmpfiles.settings."scripts" = {
-        "/etc/tools".d = {
-           mode = "0600";
-           user = "root";
-           group = "root";
-        };
-    };
-
-    isoImage.contents = [
-        { 
-            source = /home/aundre/home-lab/scripts/nixos-dev-box-setup-script.sh;
-            #target = "/etc/tools/t-1.sh";
-            target = "/etc/now";
-        }
-    ];
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
