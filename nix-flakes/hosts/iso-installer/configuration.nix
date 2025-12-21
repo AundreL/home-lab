@@ -1,31 +1,26 @@
 { config, pkgs, lib, ... }:
-let
-    
-    t-source = ../../test.sh;
+let 
+    scripts-dir = ../../../scripts;
+    flake-dir = ../..;
 
-    hello-app = derivation {
-        name = "hello-app";
+    iso-utils = derivation {
+        name = "iso-utils";
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
         args = [
             "-c"
             ''
                 export PATH=$PATH:${pkgs.coreutils}/bin
-                mkdir -p $out/bin
-                echo '#!${pkgs.bash}/bin/bash' > $out/bin/hello.sh
-                echo 'echo "hello, world!"' >> $out/bin/hello.sh
+                mkdir -p $out/etc/iso-utils
                 
-                chmod +x $out/bin/hello.sh
-
-                #cp ${t-source} $out/bin/test.sh
-                #chmod +x $out/bin/test.sh
+                cp -r ${scripts-dir} $out/bin
+                
+                echo ${flake-dir}
+                cp -r ${flake-dir}/. $out/etc/iso-utils
             ''
         ];
-
     };
 
-    kube-setup = ( builtins.readFile ../../../scripts/nixos-kube-node-setup-script.sh );
-    dev-box-setup = ( builtins.readFile ../../../scripts/nixos-dev-box-setup-script.sh );
 in
 {
     imports = [
@@ -59,14 +54,8 @@ in
     };
     
     environment.etc = {
-        "scripts/kube-node-setup.sh" = {
-            mode = "0600";
-            text = kube-setup;
-        };
-
-        "scripts/dev-box-setup.sh" = {
-            mode = "0600";
-            text = dev-box-setup;
+        "iso-utils" = {
+            source = "${iso-utils}/etc/iso-utils/";
         };
     };
     
@@ -78,7 +67,7 @@ in
         python3
         fish
         neovim
-        hello-app
+        iso-utils
     ];
 
     programs.fish.enable = true;
