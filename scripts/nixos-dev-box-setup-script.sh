@@ -29,12 +29,13 @@ mkfs.ext4 /dev/nvme0n1p2 -L NIXROOT <<EOF
 y
 EOF
 
+lsblk -f
 echo -e "\e[1;32mmounting file systems\e[0m"
 mount /dev/disk/by-label/NIXROOT /mnt
-
 mkdir -p /mnt/boot
 mount /dev/disk/by-label/NIXBOOT /mnt/boot
 
+lsblk -f
 echo -e "\e[1;32mswap setup\e[0m"
 
 dd if=/dev/zero of=/mnt/.swapfile bs=1024 count=2097152
@@ -45,4 +46,4 @@ swapon /mnt/.swapfile
 echo -e "\e[1;32starting nixos installation\e[0m"
 
 cd /mnt
-nixos-install --impure --flake  /etc/iso-utils#dev-box
+nixos-install --impure --flake  /etc/iso-utils/flakes#dev-box

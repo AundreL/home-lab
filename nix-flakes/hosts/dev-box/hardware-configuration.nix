@@ -11,15 +11,15 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "nvme" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" "wl" ];
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+  boot.extraModulePackages = [];
 
   fileSystems."/" = {
-    device = "/dev/disk/bylabel/NIXROOT";
+    device = "/dev/disk/by-label/NIXROOT";
     fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/bylabel/NIXBOOT";
+    device = "/dev/disk/by-label/NIXBOOT";
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
    };

@@ -56,40 +56,40 @@ in
 		
 		home.file = {
 			".config/nvim" = {
-				source = ../../../dotfiles/nvim;
+				source = ../../dotfiles/nvim;
 				recursive = true;
 			};
 		};
 		
 		home.file = {
 			".ssh/config" = {
-				source = ../../../dotfiles/ssh-config;
+				source = ../../dotfiles/ssh-config;
 			};
 		};
 		
 		home.file = {
 			".config/fish" = {
-				source = ../../../dotfiles/fish;
+				source = ../../dotfiles/fish;
 				recursive = true;
 			};
 		};
 		
 		home.file = {
 			".config/starship.toml" = {
-				source = ../../../dotfiles/starship.toml;
+				source = ../../dotfiles/starship.toml;
 			};
 		};
 
 		home.file = {
 			".config/zellij" = {
-				source = ../../../dotfiles/zellij;
+				source = ../../dotfiles/zellij;
 				recursive = true;
 			};
 		};
 		
 		programs.home-manager.enable = true;
 
-		home.stateVersion = "24.11";
+		home.stateVersion = "25.05";
 	};
 	# This option defines the first version of NixOS you have installed on this particular machine,
 	# and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
@@ -109,6 +109,6 @@ in
 	# For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion . 
 
 	# Do not modify or remove this configuation setting, above comment explains why.
-	system.stateVersion = "24.05";
+	system.stateVersion = "25.05";
 }
 

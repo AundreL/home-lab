@@ -1,22 +1,31 @@
 { config, pkgs, lib, ... }:
 let 
-    scripts-dir = ../../../scripts;
-    flake-dir = ../..;
+    # scripts-dir = ../../../scripts;
+    # flake-dir = ../..;
 
     iso-utils = derivation {
         name = "iso-utils";
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
+        flake_dir = ../..;
+        scripts_dir = ../../../scripts;
+        dotfiles_dir = ../../../dotfiles;
         args = [
             "-c"
             ''
                 export PATH=$PATH:${pkgs.coreutils}/bin
                 mkdir -p $out/etc/iso-utils
                 
-                cp -r ${scripts-dir} $out/bin
+                echo $out >&2
+                echo $scripts_dir >&2
+                cp -r $scripts_dir/. $out/bin
                 
-                echo ${flake-dir}
-                cp -r ${flake-dir}/. $out/etc/iso-utils
+                mkdir -p $out/etc/iso-utils/flakes
+                cp -r $flake_dir/. $out/etc/iso-utils/flakes
+
+                mkdir -p $out/etc/iso-utils/dotfiles
+                cp -r $dotfiles_dir/. $out/etc/iso-utils/dotfiles
+                cp -r $dotfiles_dir/. $out/etc/iso-utils/flakes/dotfiles
             ''
         ];
     };
@@ -52,7 +61,7 @@ in
 
         packages = with pkgs; [];
     };
-    
+ 
     environment.etc = {
         "iso-utils" = {
             source = "${iso-utils}/etc/iso-utils/";
@@ -62,9 +71,10 @@ in
     environment.systemPackages = with pkgs; [
         git
         gnumake
+        python3
+        tree
         wget
         curl
-        python3
         fish
         neovim
         iso-utils
