@@ -25,6 +25,13 @@
             ];
         };
 
+        nixosConfigurations.kube-node = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+                ./configuration.nix ./hosts/kube-node/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
+            ];
+        };
+
         nixosConfigurations.iso-installer = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [

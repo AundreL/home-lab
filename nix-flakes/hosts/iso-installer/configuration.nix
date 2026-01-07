@@ -1,9 +1,6 @@
 { config, pkgs, lib, ... }:
 let 
-    # scripts-dir = ../../../scripts;
-    # flake-dir = ../..;
-
-    iso-utils = derivation {
+    iso-utils = builtins.trace "iso-utils derivation" derivation {
         name = "iso-utils";
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
@@ -18,8 +15,16 @@ let
                 
                 echo $out >&2
                 echo $scripts_dir >&2
-                cp -r $scripts_dir/. $out/bin
+                 
+                cp -r $scripts_dir/. $out/bin/
+                 
+                #for file in $scripts_dir/.; do
+                #    cp "''$file" "$out/bin/''$file"
+                #    chmod 770 $out/bin/''$file
+                #done
                 
+                touch $out/bin/testing 
+
                 mkdir -p $out/etc/iso-utils/flakes
                 cp -r $flake_dir/. $out/etc/iso-utils/flakes
 
