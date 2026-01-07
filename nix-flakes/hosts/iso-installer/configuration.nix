@@ -11,19 +11,28 @@ let
             "-c"
             ''
                 export PATH=$PATH:${pkgs.coreutils}/bin
-                mkdir -p $out/etc/iso-utils
                 
+                mkdir -p $out/etc/iso-utils
+
                 echo $out >&2
                 echo $scripts_dir >&2
                  
                 cp -r $scripts_dir/. $out/bin/
-                 
-                #for file in $scripts_dir/.; do
-                #    cp "''$file" "$out/bin/''$file"
-                #    chmod 770 $out/bin/''$file
-                #done
+                chmod -R 777 $out/bin/
                 
-                touch $out/bin/testing 
+                echo "testing"
+                echo $out
+                
+                for x in {1..3}; do
+                    echo "here";
+                done
+
+                for file in $scripts_dir/.; do
+                    echo "''$file"
+                    #cp "''$file" "$out/bin/''$file"
+                    #chmod 770 $out/bin/''$file
+                done
+                 
 
                 mkdir -p $out/etc/iso-utils/flakes
                 cp -r $flake_dir/. $out/etc/iso-utils/flakes
