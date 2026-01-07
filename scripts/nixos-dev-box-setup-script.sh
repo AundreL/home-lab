@@ -23,8 +23,7 @@ EOF
 
 echo -e "\e[1;32mfile system setup\e[0m"
 
-mkfs.fat -F 32 /dev/nvme0n1p1
-fatlabel /dev/nvme0n1p1 NIXBOOT
+mkfs.fat -F 32 /dev/nvme0n1p1 -n NIXBOOT
 mkfs.ext4 /dev/nvme0n1p2 -L NIXROOT <<EOF
 y
 EOF
