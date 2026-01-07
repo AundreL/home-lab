@@ -1,6 +1,6 @@
 echo -e "\e[1;32mpartition setup\e[0m"
 
-fdisk /dev/nvme0n1 <<EOF
+fdisk /dev/sda <<EOF
 g
 n
 1
@@ -18,9 +18,8 @@ EOF
 echo -e "\e[1;32mfile system setup\e[0m"
 
 lsblk
-mkfs.fat -F 32 /dev/nvme0n1p1
-fatlabel /dev/nvme0n1p1 NIXBOOT
-mkfs.ext4 /dev/nvme0n1p2 -L NIXROOT <<EOF
+mkfs.fat -F 32 /dev/sda1 -n NIXBOOT
+mkfs.ext4 /dev/sda2 -L NIXROOT <<EOF
 y
 EOF
 
