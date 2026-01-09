@@ -18,17 +18,10 @@
 			];
 		};
         
-        nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
-            system = "x86_64-linux";
-            modules = [
-                ./configuration.nix ./hosts/dev-wsl/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
-            ];
-        };
-
         nixosConfigurations.kube-node = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
-                ./configuration.nix ./hosts/kube-node/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
+                ./configuration.nix ./hosts/kube-node/hardware-configuration.nix ./hosts/kube-node/configuration.nix
             ];
         };
 
@@ -39,6 +32,12 @@
             ];
         };
 
+        nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+                ./configuration.nix ./hosts/dev-wsl/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
+            ];
+        };
         #implement control-node, worker-node
 	};
 }

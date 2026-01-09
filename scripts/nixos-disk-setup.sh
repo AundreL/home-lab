@@ -42,6 +42,3 @@ mkswap -L NIXSWAP /mnt/.swapfile
 swapon /mnt/.swapfile
 
 echo -e "\e[1;32starting nixos installation\e[0m"
-
-cd /mnt
-nixos-install --impure --flake  /etc/iso-utils/flakes#kube-node

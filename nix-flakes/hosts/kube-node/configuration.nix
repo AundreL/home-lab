@@ -16,10 +16,10 @@ in
     ];
   
 	# Use the systemd-boot EFI boot loader.
-	boot.loader.efi.canTouchEfiVariables = false;
+	boot.loader.efi.canTouchEfiVariables = true;
 	boot.loader.systemd-boot.enable = true;
 	
-	networking.hostName = "dev-box";
+	networking.hostName = "kube-node";
 	time.timeZone = "Canada/Eastern";
 	
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];

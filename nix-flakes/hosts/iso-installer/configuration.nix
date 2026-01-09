@@ -13,27 +13,24 @@ let
                 export PATH=$PATH:${pkgs.coreutils}/bin
                 
                 mkdir -p $out/etc/iso-utils
-
+                mkdir -p $out/bin
                 echo $out >&2
                 echo $scripts_dir >&2
                  
-                cp -r $scripts_dir/. $out/bin/
-                chmod -R 777 $out/bin/
+                #cp -r $scripts_dir/. $out/bin/
+                #chmod -R 777 $out/bin/
                 
                 echo "testing"
-                echo $out
+                echo "out $out"
                 
-                for x in {1..3}; do
-                    echo "here";
-                done
-
-                for file in $scripts_dir/.; do
-                    echo "''$file"
-                    #cp "''$file" "$out/bin/''$file"
-                    #chmod 770 $out/bin/''$file
+                for file in $scripts_dir/*.sh; do
+                    echo "loop tracker $file"
+                    basefile=$(basename -- ''${file%.sh})
+                    echo "base $basefile"
+                    cp $file $out/bin/$basefile
+                    chmod 777 $out/bin/$basefile
                 done
                  
-
                 mkdir -p $out/etc/iso-utils/flakes
                 cp -r $flake_dir/. $out/etc/iso-utils/flakes
 
