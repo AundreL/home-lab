@@ -3,94 +3,30 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
-let
-	home-manager = builtins.fetchTarball {
-		url = "https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz";
-		sha256 = "07pk5m6mxi666dclaxdwf7xrinifv01vvgxn49bjr8rsbh31syaq";
-	};
-in
 {
-	imports =
-    [
-		(import "${home-manager}/nixos")
-    ];
+	imports = [];
   
 	# Use the systemd-boot EFI boot loader.
 	boot.loader.efi.canTouchEfiVariables = true;
 	boot.loader.systemd-boot.enable = true;
 	
-	networking.hostName = "kube-node";
+	networking.hostName = "cluster-node";
 	time.timeZone = "Canada/Eastern";
 	
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];
 	nixpkgs.config.allowUnfree = true;
 
-	environment.systemPackages = with pkgs; [
-		fish
-		starship
-        stylua
-        kdlfmt
-        cargo
-        rustup
-	];
+	environment.systemPackages = with pkgs; [];
   
 	programs.fish.enable = true;
 	programs.starship.enable = true;
 
-	users.users.aundre = {
+	users.users."cluster-node" = {
 		isNormalUser = true;
-		home = "/home/aundre";
+		home = "/home/cluster-node";
 		extraGroups = [ "wheel" "networkmanager" ]; 
-		shell = pkgs.fish;
 	};
 	
-	home-manager.users.aundre = {
-		programs.neovim.enable = true;
-		programs.neovim.defaultEditor = true;
-
-		programs.git = {
-			enable = true;
-			userName = "Aundre Lattie";
-			userEmail = "aundre@gmail.com";
-		};
-		
-		home.file = {
-			".config/nvim" = {
-				source = ../../dotfiles/nvim;
-				recursive = true;
-			};
-		};
-		
-		home.file = {
-			".ssh/config" = {
-				source = ../../dotfiles/ssh-config;
-			};
-		};
-		
-		home.file = {
-			".config/fish" = {
-				source = ../../dotfiles/fish;
-				recursive = true;
-			};
-		};
-		
-		home.file = {
-			".config/starship.toml" = {
-				source = ../../dotfiles/starship.toml;
-			};
-		};
-
-		home.file = {
-			".config/zellij" = {
-				source = ../../dotfiles/zellij;
-				recursive = true;
-			};
-		};
-		
-		programs.home-manager.enable = true;
-
-		home.stateVersion = "25.05";
-	};
 	# This option defines the first version of NixOS you have installed on this particular machine,
 	# and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
 	#
