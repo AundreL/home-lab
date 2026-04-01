@@ -7,8 +7,10 @@ END_COLOR=\033[0m
 test:	
 	./test/update-test.sh
 
+build-nix-iso:
+
 default: help
 
 .PHONY: help
-help: #jig make file commands
+help: #homelab builder
 	@grep -E '^[a-za-z0-9 -]+:.*#'  makefile | sort | while read -r l; do printf "$(COLOR_GREEN)$$(echo $$l | cut -f 1 -d':')$(END_COLOR): $$(echo $$l | cut -f 2- -d'#')\n"; done

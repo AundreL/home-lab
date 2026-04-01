@@ -8,16 +8,14 @@
 	nixpkgs.config.allowUnfree = true;
 	
 	environment.systemPackages = with pkgs; [
+        python3
+        lua
 		gnumake
         gcc
 		git
 		neovim
 		tmux
-		zellij
-        cargo
-        rustup
         tree
-        python3
 	];
 	
 	services.openssh.enable = true;

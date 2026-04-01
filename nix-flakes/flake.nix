@@ -11,20 +11,6 @@
 		pkgs = nixpkgs.legacyPackages.x86_64-linux;
 	in
 	{
-		nixosConfigurations.dev-box = nixpkgs.lib.nixosSystem {
-			system = "x86_64-linux";
-			modules = [
-				./configuration.nix ./hosts/dev-box/hardware-configuration.nix ./hosts/dev-box/configuration.nix
-			];
-		};
-        
-        nixosConfigurations.kube-node = nixpkgs.lib.nixosSystem {
-            system = "x86_64-linux";
-            modules = [
-                ./configuration.nix ./hosts/kube-node/hardware-configuration.nix ./hosts/kube-node/configuration.nix
-            ];
-        };
-
         nixosConfigurations.iso-installer = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
@@ -32,10 +18,26 @@
             ];
         };
 
+		nixosConfigurations.dev-box = nixpkgs.lib.nixosSystem {
+			system = "x86_64-linux";
+			modules = [
+				./configuration.nix ./hosts/dev-box/hardware-configuration.nix 
+                ./hosts/dev-box/configuration.nix ./users/aundre/configuration.nix 
+			];
+		};
+
+        nixosConfigurations.kube-node = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+                ./configuration.nix ./hosts/kube-node/hardware-configuration.nix
+                ./hosts/kube-node/configuration.nix
+            ];
+        };
+  
         nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
-                ./configuration.nix ./hosts/dev-wsl/configuration.nix ./defaults/env-defaults.nix ./defaults/home-manager.nix
+                ./configuration.nix ./hosts/dev-wsl/configuration.nix ./users/aundre/configuration.nix
             ];
         };
         #implement control-node, worker-node
