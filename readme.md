@@ -10,7 +10,7 @@ sudo nixos-rebuild switch --flake ".#dev-wsl"
 
 # build custom iso
 ``` bash
-sudo nix build --impure ".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+sudo make build-nix-iso
 ```
 
 # initial setup installing nixos
