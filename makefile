@@ -3,13 +3,21 @@ COLOR_RED=\033[0;31m
 COLOR_BLUE=\033[0;34m
 END_COLOR=\033[0m
 
-.PHONY: test
-test:	
-	./test/update-test.sh
-
 .PHONY: build-nix-iso
 build-nix-iso: #build nix iso
 	nix build --verbose --impure --show-trace --print-build-logs nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+
+.PHONY: build-wsl-flake
+build-wsl-flake: #build wsl flake
+	nixos-rebuild switch --impure --flake nix-flakes/"#dev-wsl"
+
+.PHONY: build-box-flake
+build-box-flake: #build  dev box flake
+	nixos-rebild switch --impure --flake nix-flakes/"#dev-box"
+
+.PHONY: test
+test:	
+	./test/update-test.sh
 
 .PHONY: clean-nix
 clean-nix: #clean nix
