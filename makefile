@@ -7,7 +7,13 @@ END_COLOR=\033[0m
 test:	
 	./test/update-test.sh
 
-build-nix-iso:
+.PHONY: build-nix-iso
+build-nix-iso: #build nix iso
+	nix build --verbose --impure --show-trace --print-build-logs nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+
+.PHONY: clean-nix
+clean-nix: #clean nix
+	echo "clean nix"
 
 default: help
 
