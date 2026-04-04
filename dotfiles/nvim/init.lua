@@ -115,11 +115,11 @@ vim.o.expandtab = true
 vim.o.relativenumber = true
 
 vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
+vim.gnmaplocalleader = "\\"
 
 vim.api.nvim_set_keymap("n", "<leader>rn", "<cmd>set relativenumber!<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<F2>", ":FloatermToggle<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("t", "<F2>", "<c-\\><c-n>:FloatermToggle<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<c-t>", ":FloatermToggle<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("t", "<c-t>", "<c-\\><c-n>:FloatermToggle<cr>", { noremap = true, silent = true })
 
 local restore_cursor_augroup = vim.api.nvim_create_augroup("restore_cursor_shape_on_exit", { clear = true })
 
@@ -145,6 +145,9 @@ vim.keymap.set("n", "<leader>a", function()
 	vim.cmd.RustLsp("codeAction")
 end, { silent = true, buffer = bufnr })
 vim.opt.termguicolors = true
+
+vim.cmd([[highlight Floaterm guifg=white]])
+
 --vim.cmd([[highlight Normal guibg=#282828]])
 --vim.cmd([[highlight MsgArea guibg=#282828]])
 --vim.cmd([[highlight BufferLine guibg=#282828]])
