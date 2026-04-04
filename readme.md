@@ -9,6 +9,7 @@ sudo make build-wsl-flake
 
 # build custom iso
 ``` bash
+# build custom nixos iso
 sudo make build-nix-iso
 ```
 

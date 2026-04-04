@@ -19,6 +19,11 @@ in
     networking.hostName = "dev-wsl";
 	wsl.enable = true;
     
+    environment.systemPackages = with pkgs; [
+        cargo
+        rustup
+    ];
+
     # run this sequence after to resolve erorr that occurs when you change default user
     # wsl -t nixos
     # wsl -d nixos --user root exit
