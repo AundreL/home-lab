@@ -20,6 +20,7 @@ in
 	wsl.enable = true;
     
     environment.systemPackages = with pkgs; [
+        lua-language-server
         cargo
         rustup
         cargo-tauri
