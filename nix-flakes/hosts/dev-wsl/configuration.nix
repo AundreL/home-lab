@@ -22,8 +22,18 @@ in
     environment.systemPackages = with pkgs; [
         cargo
         rustup
+        cargo-tauri
+        pkg-config
+        wrapGAppsHook4
+        bun
+        librsvg
+        webkitgtk_4_1
     ];
-
+    
+    environment.variables = {
+        LD_LIBRARY_PATH = "${pkgs.librsvg}/lib:${pkgs.webkitgtk_4_1}/lib:$LD_LIBRARY_PATH";
+        PKG_CONFIG_PATH = "${pkgs.webkitgtk_4_1}/lib:$PKG_CONFIG_PATH";
+    };
     # run this sequence after to resolve erorr that occurs when you change default user
     # wsl -t nixos
     # wsl -d nixos --user root exit

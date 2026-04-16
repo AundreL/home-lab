@@ -55,6 +55,12 @@ in
 				source = dotfiles + /starship.toml;
 			};
 		};
+        
+        home.file = {
+            ".tmux.conf" = {
+                source = dotfiles + /tmux/tmux.conf;
+            };
+        };
 
 		home.file = {
 			".config/zellij" = {
