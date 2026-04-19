@@ -28,6 +28,10 @@ in
 			enable = true;
 			userName = "Aundre Lattie";
 			userEmail = "aundre@gmail.com";
+            
+            extraConfig = {
+                core.editor = "nvim";
+            };
 		};
 		
 		home.file = {
