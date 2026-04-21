@@ -13,7 +13,7 @@ build-wsl-flake: #build wsl flake
 
 .PHONY: build-box-flake
 build-box-flake: #build  dev box flake
-	nixos-rebild switch --impure --flake nix-flakes/"#dev-box"
+	nixos-rebuild switch --impure --flake nix-flakes/"#dev-box"
 
 .PHONY: test
 test:	
@@ -22,6 +22,7 @@ test:
 .PHONY: clean-nix
 clean-nix: #clean nix
 	nix-collect-garbage -d
+
 default: help
 
 .PHONY: help

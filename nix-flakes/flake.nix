@@ -33,13 +33,35 @@
             ];
 
         };
- 
+        
         nixosConfigurations.kube-node = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
                 ./configuration.nix ./hosts/kube-node/hardware-configuration.nix
                 ./hosts/kube-node/configuration.nix
             ];
+        };
+
+        devShells.x86_64-linux.tauri = pkgs.mkShell {
+            nativeBuildInputs = with pkgs; [
+                pkg-config
+                wrapGAppsHook4
+                cargo
+                cargo-tauri
+                rustc
+                bun
+            ];
+
+            buildInputs = with pkgs; [
+                nodePackages."@angular/cli"
+                librsvg
+                webkitgtk_4_1
+            ];
+
+            shellHook = ''
+                echo "starting tauri shell"
+                export XDG_DATA_DIRS="$GSETTINGS_SCHEMAS_PATH" # Needed on Wayland to report the correct display scale
+            '';
         };
        #implement control-node, worker-node
 	};
