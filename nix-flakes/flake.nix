@@ -29,7 +29,7 @@
             system = "x86_64-linux";
             modules = [
                 ./configuration.nix ./hosts/dev-wsl/configuration.nix
-                ./modules/tauri/configuration.nix ./users/aundre/configuration.nix
+                ./users/aundre/configuration.nix
             ];
 
         };
