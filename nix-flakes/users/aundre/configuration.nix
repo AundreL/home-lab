@@ -4,10 +4,22 @@
 
 { config, lib, pkgs, ... }:
 let
+	home-manager = builtins.fetchTarball {
+		url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
+        sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
+	};
+
     dotfiles = ../../../dotfiles;
 in
-{ 	
+{
+	imports =
+    [
+		(import "${home-manager}/nixos")
+		<nixos-wsl/modules>
+    ];
+
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
 	nixpkgs.config.allowUnfree = true;
   
 	programs.fish.enable = true;
@@ -26,12 +38,11 @@ in
 
 		programs.git = {
 			enable = true;
-			userName = "Aundre Lattie";
-			userEmail = "aundre@gmail.com";
-            
-            extraConfig = {
+            settings = {
+                user.name = "Aundre Lattie";
+                user.email = "aundre@gmail.com";
                 core.editor = "nvim";
-            };
+            };   
 		};
 		
 		home.file = {
@@ -75,7 +86,7 @@ in
 		
 		programs.home-manager.enable = true;
 
-		home.stateVersion = "25.05";
+		home.stateVersion = "25.11";
 	};
 }
 

@@ -9,12 +9,15 @@
 	
 	environment.systemPackages = with pkgs; [
         python3
-        lua
-		gnumake
-        gcc
-		git
+        lua	
+        lua-language-server
+        
 		neovim
 		tmux
+
+        gnumake
+        gcc
+		git
         tree
 	];
 	
@@ -38,6 +41,6 @@
 	# For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion . 
 
 	# Do not modify or remove this configuation setting, above comment explains why.
-	system.stateVersion = "25.05";
+	system.stateVersion = "25.11";
 }
 

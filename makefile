@@ -21,8 +21,7 @@ test:
 
 .PHONY: clean-nix
 clean-nix: #clean nix
-	echo "clean nix"
-
+	nix-collect-garbage -d
 default: help
 
 .PHONY: help

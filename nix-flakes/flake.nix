@@ -2,11 +2,10 @@
 	description = "home lab flake configuration";
 
 	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-		home-manager.url = "github:nix-community/home-manager";
+		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 	};
 
-	outputs = { nixpkgs, ... } @ inputs: 
+	outputs = { self, nixpkgs, ... } @ inputs: 
 	let
 		pkgs = nixpkgs.legacyPackages.x86_64-linux;
 	in
@@ -22,15 +21,17 @@
 			system = "x86_64-linux";
 			modules = [
 				./configuration.nix ./hosts/dev-box/hardware-configuration.nix 
-                ./hosts/dev-box/configuration.nix ./users/aundre/configuration.nix 
+                ./hosts/dev-box/configuration.nix ./users/aundre/configuration.nix
 			];
 		};
   
         nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
-                ./configuration.nix ./hosts/dev-wsl/configuration.nix ./users/aundre/configuration.nix
+                ./configuration.nix ./hosts/dev-wsl/configuration.nix
+                ./modules/tauri/configuration.nix ./users/aundre/configuration.nix
             ];
+
         };
  
         nixosConfigurations.kube-node = nixpkgs.lib.nixosSystem {

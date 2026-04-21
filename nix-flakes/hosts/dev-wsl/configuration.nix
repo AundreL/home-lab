@@ -3,32 +3,11 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
-let
-	home-manager = builtins.fetchTarball {
-		url = "https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz";
-		sha256 = "07pk5m6mxi666dclaxdwf7xrinifv01vvgxn49bjr8rsbh31syaq";
-	};
-in
-{
-	imports =
-    [
-		(import "${home-manager}/nixos")
-		<nixos-wsl/modules>
-    ];
-    
+{    
     networking.hostName = "dev-wsl";
 	wsl.enable = true;
     
     environment.systemPackages = with pkgs; [
-        lua-language-server
-        cargo
-        rustup
-        cargo-tauri
-        pkg-config
-        wrapGAppsHook4
-        bun
-        librsvg
-        webkitgtk_4_1
     ];
     
     environment.variables = {
