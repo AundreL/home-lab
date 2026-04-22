@@ -2,20 +2,17 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, home-manager, ... }:
 let
-	home-manager = builtins.fetchTarball {
-		url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
-        sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
-	};
-
     dotfiles = ../../../dotfiles;
+    home-manager = builtins.fetchTarball {
+        url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
+        sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
+    };
 in
 {
-	imports =
-    [
-		(import "${home-manager}/nixos")
-		<nixos-wsl/modules>
+    imports = [
+        (import "${home-manager}/nixos")
     ];
 
 	nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -89,4 +86,3 @@ in
 		home.stateVersion = "25.11";
 	};
 }
-
