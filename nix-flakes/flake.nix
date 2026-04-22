@@ -42,6 +42,8 @@
             ];
         };
 
+       #implement control-node, worker-node
+
         devShells.x86_64-linux.tauri = pkgs.mkShell {
             nativeBuildInputs = with pkgs; [
                 pkg-config
@@ -63,6 +65,5 @@
                 export XDG_DATA_DIRS="$GSETTINGS_SCHEMAS_PATH" # Needed on Wayland to report the correct display scale
             '';
         };
-       #implement control-node, worker-node
 	};
 }

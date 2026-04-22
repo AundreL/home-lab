@@ -15,6 +15,10 @@ build-wsl-flake: #build wsl flake
 build-box-flake: #build  dev box flake
 	nixos-rebuild switch --impure --flake nix-flakes/"#dev-box"
 
+.PHONY: start-tauri-shell
+start-tauri-shell:#start tauri shell
+	nix develop nix-flakes/".#tauri" --command fish
+
 .PHONY: test
 test:	
 	./test/update-test.sh
