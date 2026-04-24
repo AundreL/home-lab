@@ -41,6 +41,17 @@ let
         ];
     };
 
+    secrets = builtins.trace "secrets" derivation {
+        name = "secrets";
+        system = builtins.currentSystem;
+        builder = "${pkgs.bash}/bin/bash";
+        args = [
+            "-c"
+            ''
+                ssh-keygen -t ed25519 -f ./id_ed25519
+            ''
+        ];
+    };
 in
 {
     imports = [
@@ -96,7 +107,7 @@ in
     services.openssh = {
         enable = true;
         ports = [ 22 ];
-        passwordAuthentication = true;
+        settings.PasswordAuthentication = true;
     };
 
     # This value determines the NixOS release from which the default

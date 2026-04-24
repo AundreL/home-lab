@@ -5,6 +5,10 @@ END_COLOR=\033[0m
 
 .PHONY: build-nix-iso
 build-nix-iso: #build nix iso
+	nix build --impure nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+
+.PHONY: build-nix-iso-verbose
+build-nix-iso-verbose: #build nix iso
 	nix build --verbose --impure --show-trace --print-build-logs nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
 .PHONY: build-wsl-flake
@@ -15,6 +19,10 @@ build-wsl-flake: #build wsl flake
 build-box-flake: #build  dev box flake
 	nixos-rebuild switch --impure --flake nix-flakes/"#dev-box"
 
+.PHONY: create-nix-secrets
+create-nix-secrets: #create nix secrets
+	@echo "not implemented"
+	ssh-keygen -t ed25519 -f /nix-flakes/.secrets/
 .PHONY: start-tauri-shell
 start-tauri-shell:#start tauri shell
 	nix develop nix-flakes/".#tauri" --command fish

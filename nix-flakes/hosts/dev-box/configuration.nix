@@ -14,8 +14,6 @@
 	environment.systemPackages = with pkgs; [
 		fish
 		starship
-        cargo
-        rustup
         kdlfmt
    ];
   

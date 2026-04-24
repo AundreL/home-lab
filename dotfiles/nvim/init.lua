@@ -1,4 +1,4 @@
--- Bootstrap lazy.nvim
+-- bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -19,34 +19,39 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
--- Setup lazy.nvim
+-- setup lazy.nvim
 require("lazy").setup({
     spec = {
         {
+            --auto complete
             "saghen/blink.cmp",
             dependencies = "rafamadriz/friendly-snippets",
-            version = "*",
+            version = "1.*",
 
+            ---@module 'blink.cmp'
+            ---@type blink.cmp.Config
             opts = {
                 keymap = { preset = "default" },
-
+                cmdline = {
+                    enable = true;
+                },
                 appearance = {
-                    -- use_nvim_cmp_as_default = true,
+                    use_nvim_cmp_as_default = true,
                     nerd_font_variant = "mono",
                 },
                 completion = {
                     documentation = { auto_show = false },
                 },
+                signature = { enabled = true };
                 sources = {
                     default = { "lsp", "path", "snippets", "buffer" },
                 },
+                fuzzy = { implementation = "prefer_rust_with_warning" },
             },
             opts_extend = { "sources.default" },
         },
         {
-            "neovim/nvim-lspconfig",
-        },
-        {
+            --colorscheme
             "fcancelinha/nordern.nvim",
             branch = "master",
             priority = 1000,
@@ -61,6 +66,7 @@ require("lazy").setup({
             end,
         },
         {
+            --formatter
             "stevearc/conform.nvim",
             opts = {
                 default_format_opts = {
@@ -81,6 +87,7 @@ require("lazy").setup({
         },
         { "voldikss/vim-floaterm" },
         { "imsnif/kdl.vim" },
+        { "neovim/nvim-lspconfig",},
         { "rust-lang/rust.vim" },
         {
             "mrcjkb/rustaceanvim",
