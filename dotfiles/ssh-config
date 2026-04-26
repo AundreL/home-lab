@@ -1,5 +1,6 @@
 #config setup
 Host github.com
-HostName github.com
-User git
-IdentityFile ~/.ssh/id_ed25519_github
+    HostName github.com
+    User git
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_github

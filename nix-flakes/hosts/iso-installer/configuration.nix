@@ -40,21 +40,36 @@ let
             ''
         ];
     };
-
-    secrets = builtins.trace "secrets" derivation {
+    
+    secrets.dir = builtins.trace "secrets derivation" derivation {
         name = "secrets";
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
         args = [
             "-c"
             ''
-                ssh-keygen -t ed25519 -f ./id_ed25519
+                export PATH=$PATH:${pkgs.coreutils}/bin:${pkgs.openssh}/bin
+                mkdir -p $out
+                ssh-keygen -q -t ed25519 -N '''''' -f $out/id_ed25519
+                chmod 600 $out/id_ed25519
+                chmod 600 $out/id_ed25519.pub
             ''
         ];
     };
+    
+    secrets.private-key = secrets.dir + /id_ed25519;
+    secrets.public-key = secrets.dir + /id_ed25519.pub;
+    
+    home-manager = builtins.fetchTarball {
+        url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
+        sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
+    };
+
+    auth-contents = builtins.trace "secret location ${secrets.dir}" ( builtins.readFile (secrets.public-key) );
 in
 {
     imports = [
+        (import "${home-manager}/nixos")
         <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
         <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
     ];
@@ -71,19 +86,21 @@ in
     security.sudo.wheelNeedsPassword = false;
 
     users.users.nixos = {
-        openssh.authorizedKeys.keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFqIYjjH05wl+tQj1YRIw481RZqFGIMmCrEKINSZI8k/ aundre@dev-wsl"
-        ];
-
         isNormalUser = true;
         description = "nixos";
         extraGroups = [ "wheel" ];
-        initialPassword = "admin";
         shell = pkgs.fish;
 
+        openssh.authorizedKeys.keys = [
+            auth-contents
+        ];
         packages = with pkgs; [];
     };
- 
+    
+    home-manager.users.nixos = {
+        home.stateVersion = "25.11";
+    };
+
     environment.etc = {
         "iso-utils" = {
             source = "${iso-utils}/etc/iso-utils/";
@@ -97,17 +114,22 @@ in
         tree
         wget
         curl
-        fish
         neovim
         iso-utils
+        secrets.dir
     ];
 
-    programs.fish.enable = true;
+    programs.fish = {
+        enable = true;
+        interactiveShellInit = ''
+            fish_vi_key_bindings
+        '';
+    };
   
     services.openssh = {
         enable = true;
         ports = [ 22 ];
-        settings.PasswordAuthentication = true;
+        settings.PasswordAuthentication = false;
     };
 
     # This value determines the NixOS release from which the default

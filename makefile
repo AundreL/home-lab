@@ -9,7 +9,7 @@ build-nix-iso: #build nix iso
 
 .PHONY: build-nix-iso-verbose
 build-nix-iso-verbose: #build nix iso
-	nix build --verbose --impure --show-trace --print-build-logs nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+	nix build --verbose --impure --show-trace nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
 .PHONY: build-wsl-flake
 build-wsl-flake: #build wsl flake
