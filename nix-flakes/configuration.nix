@@ -14,7 +14,8 @@
         
 		neovim
 		tmux
-
+        
+        coreutils
         gnumake
         gcc
 		git

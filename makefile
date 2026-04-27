@@ -2,9 +2,29 @@ COLOR_GREEN=\033[0;32m
 COLOR_RED=\033[0;31m
 COLOR_BLUE=\033[0;34m
 END_COLOR=\033[0m
+HOME_DIR=/home/$(shell echo $$SUDO_USER)
+SSH_DIR=$(HOME_DIR)/.ssh
 
-.PHONY: build-nix-iso
-build-nix-iso: #build nix iso
+.PHONY: build-nix-iso-prod
+build-nix-iso-prod: #build nix iso for production
+	nix build --impure nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage" &> build-log-output.txt
+	$(eval SECRET_STORE := $(shell grep -oP "location: \K.*" build-log-output.txt | tr -d ' '))
+	@echo "variable: $(HOME_DIR)"
+
+	rm -f $(HOME_DIR)/.ssh/known_hosts
+	rm -f $(HOME_DIR)/.ssh/id_ed25519
+	rm -f $(HOME_DIR)/.ssh/id_ed25519.pub
+	cp $(SECRET_STORE)/id_ed25519 $(SSH_DIR)
+	cp $(SECRET_STORE)/id_ed25519.pub $(SSH_DIR)
+	
+	chown $(SUDO_USER) $(SSH_DIR)/id_ed25519
+	chown $(SUDO_USER) $(SSH_DIR)/id_ed25519.pub
+
+	chmod 600 $(SSH_DIR)/id_ed25519
+	chmod 600 $(SSH_DIR)/id_ed25519.pub
+
+.PHONY: build-nix-iso-dev
+build-nix-iso-dev: #build nix iso
 	nix build --impure nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
 .PHONY: build-nix-iso-verbose

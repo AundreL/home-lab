@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let 
-    iso-utils = builtins.trace "iso-utils derivation" derivation {
+    iso-utils = derivation {
         name = "iso-utils";
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
@@ -41,7 +41,7 @@ let
         ];
     };
     
-    secrets.dir = builtins.trace "secrets derivation" derivation {
+    secrets.dir = derivation {
         name = "secrets";
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
@@ -65,7 +65,7 @@ let
         sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
     };
 
-    auth-contents = builtins.trace "secret location ${secrets.dir}" ( builtins.readFile (secrets.public-key) );
+    auth-contents = builtins.trace "secret location: ${secrets.dir}" ( builtins.readFile (secrets.public-key) );
 in
 {
     imports = [
@@ -94,7 +94,6 @@ in
         openssh.authorizedKeys.keys = [
             auth-contents
         ];
-        packages = with pkgs; [];
     };
     
     home-manager.users.nixos = {
@@ -116,7 +115,6 @@ in
         curl
         neovim
         iso-utils
-        secrets.dir
     ];
 
     programs.fish = {
