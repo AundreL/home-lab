@@ -24,7 +24,16 @@
                 ./hosts/dev-box/configuration.nix ./users/aundre/configuration.nix
 			];
 		};
-  
+
+        #system for testing configs on vm before using on my main system 
+		nixosConfigurations.dev-box-vm = nixpkgs.lib.nixosSystem {
+			system = "x86_64-linux";
+			modules = [
+				./configuration.nix ./hosts/kube-node/hardware-configuration.nix
+                ./hosts/dev-box/configuration.nix ./users/aundre/configuration.nix
+			];
+		};
+
         nixosConfigurations.dev-wsl = nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [

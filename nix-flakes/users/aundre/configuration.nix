@@ -55,7 +55,7 @@ in
 			};
 		};
 		
-		home.file = {
+		home.file = builtins.trace "dotfiles location: ${dotfiles}" {
 			".config/fish" = {
 				source = dotfiles + /fish;
 				recursive = true;
