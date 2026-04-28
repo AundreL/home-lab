@@ -2,25 +2,27 @@
 configuration files and documentation for homelab
 
 ``` bash
-# setup nixos for dev-box
+# commands to run to update fully installed systems
 sudo make build-box-flake
+
+# install NixOS wsl first https://github.com/nix-community/NixOS-WSL
 sudo make build-wsl-flake
 ```
 
 # build custom iso
 ``` bash
 # build custom nixos iso
-sudo make build-nix-iso
+sudo make build-nix-iso-prod
 ```
 
-# initial setup installing nixos
-
+# custom nixos iso live disk can run the following commands
 ``` bash
-# copy install file move 
-sudo cp /install/configuration /etc/nixos/configuration.nix
-```
+# once the live disk reaches command line run either command to install
+# said system
+init-dev-box
+init-kube-node
 
-```bash
-# rebuilt nix configuration
-sudo nixos-rebuild switch
+# these and commands only used during testing 
+nix-cleanup
+nixos-desk-setup
 ```
