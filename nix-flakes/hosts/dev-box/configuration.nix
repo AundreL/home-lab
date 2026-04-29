@@ -8,16 +8,30 @@
 	boot.loader.efi.canTouchEfiVariables = false;
 	boot.loader.systemd-boot.enable = true;
 	
+    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
 	networking.hostName = "dev-box";
 	time.timeZone = "Canada/Eastern";
 	
+    i18n.supportedLocales = [
+        "en_US.UTF-8/UTF-8"
+    ];
+
+    i18n.defaultLocale = "en_US.UTF-8";
+
+    nixpkgs.config.allowUnfree = true;
+    security.sudo.wheelNeedsPassword = true;
+
 	environment.systemPackages = with pkgs; [
 		fish
 		starship
         kdlfmt
    ];
-  
-    programs.fish.enable = true;
-    programs.starship.enable = true;
+
+    services.openssh = {
+        enable = true;
+        ports = [ 22 ];
+        settings.PasswordAuthentication = false;
+    };
 }
 

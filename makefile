@@ -2,6 +2,7 @@ COLOR_GREEN=\033[0;32m
 COLOR_RED=\033[0;31m
 COLOR_BLUE=\033[0;34m
 END_COLOR=\033[0m
+
 HOME_DIR=/home/$(shell echo $$SUDO_USER)
 SSH_DIR=$(HOME_DIR)/.ssh
 
@@ -24,25 +25,28 @@ build-nix-iso-prod: #build nix iso for production
 	chmod 600 $(SSH_DIR)/id_ed25519.pub
 
 .PHONY: build-nix-iso-dev
-build-nix-iso-dev: #build nix iso
+build-nix-iso-dev: #build nix iso production script with output sent to stdout instead of log file
 	nix build --impure path:nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
 .PHONY: build-nix-iso-verbose
-build-nix-iso-verbose: #build nix iso
+build-nix-iso-verbose: #build nix iso with trace and verbose on
 	nix build --verbose --impure --show-trace path:nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
-.PHONY: build-wsl-flake
-build-wsl-flake: #build wsl flake
+.PHONY: build-dev-wsl-flake
+build-dev-wsl-flake: #build wsl flake
 	nixos-rebuild switch --impure --flake path:nix-flakes/"#dev-wsl"
 
-.PHONY: build-box-flake
-build-box-flake: #build  dev box flake
+.PHONY: build-dev-box-flake
+build-dev-box-flake: #build  dev box flake
 	nixos-rebuild switch --impure --flake path:nix-flakes/"#dev-box"
 
 .PHONY: create-nix-secrets
 create-nix-secrets: #create nix secrets
 	@echo "not implemented"
-	ssh-keygen -t ed25519 -f /nix-flakes/.secrets/
+	#generate ssk key for iso boot strap
+	#generate ssh key for node
+	#move ssh to user .ssh folder
+	#write public keys to .secrets.nix file
 
 .PHONY: start-tauri-shell
 start-tauri-shell:#start tauri shell

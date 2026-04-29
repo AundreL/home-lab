@@ -14,11 +14,7 @@ in
     imports = [
         (import "${home-manager}/nixos")
     ];
-
-	nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-	nixpkgs.config.allowUnfree = true;
-  
+ 
 	programs.fish.enable = true;
 	programs.starship.enable = true;
 
