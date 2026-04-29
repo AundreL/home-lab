@@ -4,7 +4,7 @@
 
 { config, lib, pkgs, home-manager, ... }:
 let
-    dotfiles = ../../../dotfiles;
+    dotfiles = ../../dotfiles;
     home-manager = builtins.fetchTarball {
         url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
         sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
@@ -22,7 +22,7 @@ in
 	programs.fish.enable = true;
 	programs.starship.enable = true;
 
-	users.users.aundre = {
+	users.users.aundre =  builtins.trace "dotfiles location: ${dotfiles}" {
 		isNormalUser = true;
 		home = "/home/aundre";
 		extraGroups = [ "wheel" "networkmanager" ]; 
@@ -55,11 +55,9 @@ in
 			};
 		};
 		
-		home.file = builtins.trace "dotfiles location: ${dotfiles}" {
-			".config/fish" = {
-				source = dotfiles + /fish;
-				recursive = true;
-			};
+		home.file.".config/fish" = {
+            source = dotfiles + /fish;
+            recursive = true;
 		};
 		
 		home.file = {

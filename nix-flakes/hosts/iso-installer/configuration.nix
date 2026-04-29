@@ -5,8 +5,8 @@ let
         system = builtins.currentSystem;
         builder = "${pkgs.bash}/bin/bash";
         flake_dir = ../..;
-        scripts_dir = ../../../scripts;
-        dotfiles_dir = ../../../dotfiles;
+        scripts_dir = ../../scripts;
+        dotfiles_dir = ../../dotfiles;
         args = [
             "-c"
             ''
@@ -20,8 +20,10 @@ let
                 #cp -r $scripts_dir/. $out/bin/
                 #chmod -R 777 $out/bin/
                 
-                echo "testing"
-                echo "out $out"
+                echo "flake_dir: $flake_dir"
+                echo "scripts_dir: $scripts_dir"
+                echo "dotfiles_dir: $dotfiles_dir"
+                echo "derivation location: $out"
                 
                 for file in $scripts_dir/*.sh; do
                     echo "loop tracker $file"
@@ -30,13 +32,9 @@ let
                     cp $file $out/bin/$basefile
                     chmod 777 $out/bin/$basefile
                 done
-                 
-                mkdir -p $out/etc/iso-utils/flakes
+                
+                mkdir -p $out/etc/iso-utils/flakes/dotfiles
                 cp -r $flake_dir/. $out/etc/iso-utils/flakes
-
-                mkdir -p $out/etc/iso-utils/dotfiles
-                cp -r $dotfiles_dir/. $out/etc/iso-utils/dotfiles
-                cp -r $dotfiles_dir/. $out/etc/iso-utils/flakes/dotfiles
             ''
         ];
     };

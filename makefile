@@ -7,7 +7,7 @@ SSH_DIR=$(HOME_DIR)/.ssh
 
 .PHONY: build-nix-iso-prod
 build-nix-iso-prod: #build nix iso for production
-	nix build --impure nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage" &> build-log-output.txt
+	nix build --impure path:nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage" &> build-log-output.txt
 	$(eval SECRET_STORE := $(shell grep -oP "location: \K.*" build-log-output.txt | tr -d ' '))
 	@echo "variable: $(HOME_DIR)"
 
@@ -25,24 +25,25 @@ build-nix-iso-prod: #build nix iso for production
 
 .PHONY: build-nix-iso-dev
 build-nix-iso-dev: #build nix iso
-	nix build --impure nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+	nix build --impure path:nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
 .PHONY: build-nix-iso-verbose
 build-nix-iso-verbose: #build nix iso
-	nix build --verbose --impure --show-trace nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
+	nix build --verbose --impure --show-trace path:nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage"
 
 .PHONY: build-wsl-flake
 build-wsl-flake: #build wsl flake
-	nixos-rebuild switch --impure --flake nix-flakes/"#dev-wsl"
+	nixos-rebuild switch --impure --flake path:nix-flakes/"#dev-wsl"
 
 .PHONY: build-box-flake
 build-box-flake: #build  dev box flake
-	nixos-rebuild switch --impure --flake nix-flakes/"#dev-box"
+	nixos-rebuild switch --impure --flake path:nix-flakes/"#dev-box"
 
 .PHONY: create-nix-secrets
 create-nix-secrets: #create nix secrets
 	@echo "not implemented"
 	ssh-keygen -t ed25519 -f /nix-flakes/.secrets/
+
 .PHONY: start-tauri-shell
 start-tauri-shell:#start tauri shell
 	nix develop nix-flakes/".#tauri" --command fish
@@ -50,6 +51,16 @@ start-tauri-shell:#start tauri shell
 .PHONY: test
 test:	
 	./test/update-test.sh
+
+.PHONY: init-nix-struct
+init-struct: #initialize file structure for flakes
+	cp -r scripts/ nix-flakes
+	cp -r dotfiles/ nix-flakes
+
+.PHONY: resync-nix-struct
+resync-nix-struct: #sync file structure for flakes
+	rsync -avh --delete scripts/ nix-flakes/scripts
+	rsync -avh --delete dotfiles/ nix-flakes/dotfiles
 
 .PHONY: clean-nix
 clean-nix: #clean nix
