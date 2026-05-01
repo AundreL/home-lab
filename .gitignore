@@ -2,3 +2,8 @@ build-stage
 result
 build-log-output.txt
 secrets
+
+
+# Added by cargo
+
+/target

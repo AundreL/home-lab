@@ -9,6 +9,7 @@
 	
 	environment.systemPackages = with pkgs; [
         python3
+        cargo
         lua	
         lua-language-server
         
