@@ -17,7 +17,7 @@ sudo make build-wsl-flake
 sudo make build-nix-iso-prod
 ```
 
-## Custom NixOS ISO live disk tools
+## Custom NixOS ISO Live Disk Tools
 ``` bash
 # once the live disk reaches command line run tool to install system
 # use the command based on the system
