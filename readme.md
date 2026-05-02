@@ -19,7 +19,8 @@ sudo make build-nix-iso-prod
 
 ## Custom NixOS ISO Live Disk Tools
 ``` bash
-# once the live disk reaches command line run tool to install system
+# once the live disk reaches command line 
+# run tool to install system
 # use the command based on the system
 init-dev-box
 init-dev-box-vm
