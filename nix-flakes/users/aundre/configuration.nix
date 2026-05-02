@@ -5,6 +5,7 @@
 { config, lib, pkgs, home-manager, ... }:
 let
     dotfiles = ../../dotfiles;
+    secrets = import ../../.secrets.nix;
     home-manager = builtins.fetchTarball {
         url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
         sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
@@ -23,6 +24,10 @@ in
 		home = "/home/aundre";
 		extraGroups = [ "wheel" "networkmanager" ]; 
 		shell = pkgs.fish;
+
+        openssh.authorizedKeys.keys = [
+            secrets.dev_box_aundre
+        ];
 	};
 	
 	home-manager.users.aundre = {

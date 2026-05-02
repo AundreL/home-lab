@@ -38,32 +38,13 @@ let
             ''
         ];
     };
-    
-    secrets.dir = derivation {
-        name = "secrets";
-        system = builtins.currentSystem;
-        builder = "${pkgs.bash}/bin/bash";
-        args = [
-            "-c"
-            ''
-                export PATH=$PATH:${pkgs.coreutils}/bin:${pkgs.openssh}/bin
-                mkdir -p $out
-                ssh-keygen -q -t ed25519 -N '''''' -f $out/id_ed25519
-                chmod 600 $out/id_ed25519
-                chmod 600 $out/id_ed25519.pub
-            ''
-        ];
-    };
-    
-    secrets.private-key = secrets.dir + /id_ed25519;
-    secrets.public-key = secrets.dir + /id_ed25519.pub;
-    
+        
     home-manager = builtins.fetchTarball {
         url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
         sha256 = "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9";
     };
 
-    auth-contents = builtins.trace "secret location: ${secrets.dir}" ( builtins.readFile (secrets.public-key) );
+    secrets = import ../../.secrets.nix;
 in
 {
     imports = [
@@ -90,7 +71,7 @@ in
         shell = pkgs.fish;
 
         openssh.authorizedKeys.keys = [
-            auth-contents
+            secrets.dev_box_nixos
         ];
     };
     

@@ -20,6 +20,7 @@
         gnumake
         gcc
 		git
+        openssh
         tree
 	];
 	

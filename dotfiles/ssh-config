@@ -4,3 +4,27 @@ Host github.com
     User git
     Port 22
     IdentityFile ~/.ssh/id_ed25519_github
+
+Host dev_box_vm_nixos
+    Host 10.0.198.211
+    User nixos
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_dev_box_nixos
+
+Host dev_box_vm_aundre
+    Host 10.0.198.211
+    User aundre
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_dev_box_aundre
+
+Host dev_box
+    Host 10.0.0.25
+    User nixos
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_dev_box_nixos
+
+Host dev_box
+    Host 10.0.0.25
+    User aundre
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_dev_box_aundre

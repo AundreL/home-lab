@@ -3,26 +3,24 @@ COLOR_RED=\033[0;31m
 COLOR_BLUE=\033[0;34m
 END_COLOR=\033[0m
 
-HOME_DIR=/home/$(shell echo $$SUDO_USER)
+ifeq ($(shell id -u), 0)
+	HOME_DIR=/home/$(shell echo $$SUDO_USER)
+else
+	HOME_DIR=$$HOME
+endif
+
 SSH_DIR=$(HOME_DIR)/.ssh
+
+SSH_DEV_BOX_NIXOS=id_ed25519_dev_box_nixos
+SSH_DEV_BOX_AUNDRE=id_ed25519_dev_box_aundre
+
+SSH_DEV_BOX_NIXOS_PUB_KEY_F=$(HOME_DIR)/.ssh/$(SSH_DEV_BOX_NIXOS).pub
+SSH_DEV_BOX_AUNDRE_PUB_KEY_F=$(HOME_DIR)/.ssh/$(SSH_DEV_BOX_AUNDRE).pub
 
 .PHONY: build-nix-iso-prod
 build-nix-iso-prod: #build nix iso for production
 	nix build --impure path:nix-flakes/".#nixosConfigurations.iso-installer.config.system.build.isoImage" &> build-log-output.txt
 	$(eval SECRET_STORE := $(shell grep -oP "location: \K.*" build-log-output.txt | tr -d ' '))
-	@echo "variable: $(HOME_DIR)"
-
-	rm -f $(HOME_DIR)/.ssh/known_hosts
-	rm -f $(HOME_DIR)/.ssh/id_ed25519
-	rm -f $(HOME_DIR)/.ssh/id_ed25519.pub
-	cp $(SECRET_STORE)/id_ed25519 $(SSH_DIR)
-	cp $(SECRET_STORE)/id_ed25519.pub $(SSH_DIR)
-	
-	chown $(SUDO_USER) $(SSH_DIR)/id_ed25519
-	chown $(SUDO_USER) $(SSH_DIR)/id_ed25519.pub
-
-	chmod 600 $(SSH_DIR)/id_ed25519
-	chmod 600 $(SSH_DIR)/id_ed25519.pub
 
 .PHONY: build-nix-iso-dev
 build-nix-iso-dev: #build nix iso production script with output sent to stdout instead of log file
@@ -40,13 +38,22 @@ build-dev-wsl-flake: #build wsl flake
 build-dev-box-flake: #build  dev box flake
 	nixos-rebuild switch --impure --flake path:nix-flakes/"#dev-box"
 
-.PHONY: create-nix-secrets
-create-nix-secrets: #create nix secrets
-	@echo "not implemented"
-	#generate ssk key for iso boot strap
-	#generate ssh key for node
-	#move ssh to user .ssh folder
-	#write public keys to .secrets.nix file
+create-nix-secrets: check-keys-exist #create nix secrets
+	rm nix-flakes/secrets.nix
+	@echo "{" >> nix-flakes/secrets.nix
+	@echo ' 	dev_box_nixos = "$(shell cat ~/.ssh/id_ed25519_dev_box_nixos.pub)";' >> nix-flakes/secrets.nix
+	@echo ' 	dev_box_aundre = "$(shell cat ~/.ssh/id_ed25519_dev_box_aundre.pub)";' >> nix-flakes/secrets.nix
+	@echo "}" >> nix-flakes/secrets.nix
+	cat nix-flakes/secrets.nix
+
+nix-flakes/secrets.nix: 
+check-keys-exist:
+	@if ! [ -f $(SSH_DEV_BOX_NIXOS_PUB_KEY_F) ]; then \
+		ssh-keygen -q -t ed25519 -N '' -f $(SSH_DIR)/$(SSH_DEV_BOX_NIXOS); \
+	fi
+	@if ! [ -f $(SSH_DEV_BOX_AUNDRE_PUB_KEY_F) ]; then \
+		ssh-keygen -q -t ed25519 -N '' -f $(SSH_DIR)/$(SSH_DEV_BOX_AUNDRE); \
+	fi
 
 .PHONY: start-tauri-shell
 start-tauri-shell:#start tauri shell
