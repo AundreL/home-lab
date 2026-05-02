@@ -9,3 +9,7 @@ NixOS = "\ue843 "
 
 [package]
 symbol = "\ueb29 "
+
+[username]
+show_always = true
+style_user = "bold yellow"

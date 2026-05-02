@@ -106,7 +106,10 @@ in
     services.openssh = {
         enable = true;
         ports = [ 22 ];
-        settings.PasswordAuthentication = false;
+        settings = {
+            PermitRootLogin = "no";
+            PasswordAuthentication = false;
+        };
     };
 
     # This value determines the NixOS release from which the default
