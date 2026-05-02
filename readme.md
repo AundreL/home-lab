@@ -1,29 +1,31 @@
-# home-lab
-configuration files and documentation for homelab
+# Home Laboratory
+Configuration files and documentation for homelab.
 
+## Update Installed System
 ``` bash
 # commands to run to update fully installed systems
-sudo make build-box-flake
+sudo make build-dev-box-flake
 
 # install NixOS wsl first
 # https://github.com/nix-community/NixOS-WSL
 sudo make build-wsl-flake
 ```
 
-# build custom iso
+## Build New Custom NixOS ISO
 ``` bash
 # build custom nixos iso
 sudo make build-nix-iso-prod
 ```
 
-# custom nixos iso live disk tools
+## Custom NixOS ISO live disk tools
 ``` bash
 # once the live disk reaches command line run tool to install system
-# said system
+# use the command based on the system
 init-dev-box
+init-dev-box-vm
 init-kube-node
 
-# these and commands only used during testing 
+# commands only used during testing 
 nix-cleanup
 nixos-desk-setup
 ```
