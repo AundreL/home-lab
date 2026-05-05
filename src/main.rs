@@ -9,10 +9,19 @@ struct Cli{
 
 #[derive(Subcommand)]
 enum Commands {
-    NixIso{},
+    NixIso{
+        #[command(subcommand)]
+        subcommand:  Option<NixIsoSubCommands>
+    },
     DevWslFlake{},
     DevBoxFlake{},
     Nix{},
+}
+
+#[derive(Subcommand)]
+enum NixIsoSubCommands{
+    BuildIsoProd{},
+    BuildIsoDev{},
 }
 
 fn main() {
@@ -32,13 +41,32 @@ mod tests{
         let cli = Cli::try_parse_from(args).unwrap();
 
         match &cli.command{
-            Some(Commands::NixIso {}) => {
-               todo!("not implemented");
+            Some(Commands::NixIso { subcommand }) => {
+                assert!( subcommand.is_none() );
+                todo!("not implemented");
             }
             _ => {}
         }
     }
-    
+     
+    #[test]
+    fn nix_iso_build_iso_prod() {
+        let args = vec![ PROGRAM_NAME, "nix-iso", "build-iso-prod" ];
+        let cli = Cli::try_parse_from(args).unwrap();
+
+        match &cli.command{
+            Some(Commands::NixIso { subcommand }) => {
+                match subcommand{
+                    Some(NixIsoSubCommands::BuildIsoProd{}) =>{         
+                        todo!("not implemented");
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
+    }
+
     #[test]
     fn dev_wsl_flake() {
         let args = vec![ PROGRAM_NAME, "dev-wsl-flake" ];
