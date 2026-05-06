@@ -34,7 +34,23 @@ mod tests{
     use clap::Parser;
  
     const PROGRAM_NAME:&str = "hl-util";
-    
+
+/*
+ * current make command       drafted      working       complete
+ *build-iso-prod                X      
+ *build-nix-iso-dev             X
+ *build-nix-iso-verbose         X
+ *build-dev-wsl-flake           X
+ *build-dev-box-flake           X
+ *build-dev-box-vm-flake
+ *create-nix-secrets
+ *start-tuari-shell
+ *init-struct(nix)
+ *resync-nix-struct
+ *clean-nix
+ *default/help
+ *
+ */
     #[test]
     fn nix_iso_default() {
         let args = vec![ PROGRAM_NAME, "nix-iso" ];
