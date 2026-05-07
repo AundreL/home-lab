@@ -1,7 +1,9 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, CommandFactory};
 
 #[derive(Parser)]
+#[command(name ="ul-util")]
 #[command(version, about, long_about = None)]
+#[command(propagate_version  = true)]
 struct Cli{
     #[command(subcommand)]
     command: Option<Commands>,
@@ -9,6 +11,7 @@ struct Cli{
 
 #[derive(Subcommand)]
 enum Commands {
+
     NixIso{
         #[command(subcommand)]
         subcommand:  Option<NixIsoSubCommands>
@@ -28,12 +31,16 @@ enum Commands {
 }
 
 #[derive(Subcommand)]
+#[command(arg_required_else_help = true)]
 enum NixIsoSubCommands{
+    #[command(about="build iso prod", long_about = None)]
     BuildIsoProd{},
+    #[command(about="build iso dev", long_about = None)]
     BuildIsoDev{},
 }
 
 #[derive(Subcommand)]
+#[command(arg_required_else_help = true)]
 enum NixHostsSubCommands{
     BuildDevWsl{},
     BuildDevBox{},
@@ -41,11 +48,13 @@ enum NixHostsSubCommands{
 }
 
 #[derive(Subcommand)]
+#[command(arg_required_else_help = true)]
 enum NixShellsSubCommands{
     StartTauri{},
 }
 
 #[derive(Subcommand)]
+#[command(arg_required_else_help = true)]
 enum NixSubCommands{
     CreateSecrets{},
     InitStruct{},
@@ -55,6 +64,25 @@ enum NixSubCommands{
 
 fn main() {
     println!("home lab utility");
+    let cli = Cli::parse();
+    
+    match &cli.command{
+        Some(Commands::NixIso{ subcommand }) => {
+            todo!("nix-iso default not implemented");
+        },
+        Some(Commands::NixHosts {subcommand} ) => {
+            todo!("nix-hosts default not implemented");
+        },
+        Some(Commands::NixShells {subcommand} ) => {
+            todo!("nix-shells default not implemented");
+        },
+        Some(Commands::Nix {subcommand} ) => {
+            todo!("nix default not implemented");
+        },
+        _ => {
+            Cli::command().print_help().unwrap();
+        }
+    }
 }
 
 #[cfg(test)]
@@ -77,7 +105,7 @@ mod tests{
  *nix-resync-struct(nix)        X
  *nix-create-secrets            X
  *nix-clean                     X
- *default/help
+ *default/help                  X
  *
  */
     #[test]
@@ -89,7 +117,7 @@ mod tests{
             Some(Commands::NixIso { subcommand }) => {
                 assert!( subcommand.is_none() );
                 todo!("not implemented");
-            }
+            },
             _ => {}
         }
     }
