@@ -9,8 +9,13 @@
 	
 	environment.systemPackages = with pkgs; [
         python3
+        
         cargo
-        lua	
+        rustfmt
+        rust-analyzer
+
+        lua
+        stylua
         lua-language-server
         
 		neovim

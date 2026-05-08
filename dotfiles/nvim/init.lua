@@ -88,10 +88,9 @@ require("lazy").setup({
         { "voldikss/vim-floaterm" },
         { "imsnif/kdl.vim" },
         { "neovim/nvim-lspconfig",},
-        { "rust-lang/rust.vim" },
         {
             "mrcjkb/rustaceanvim",
-            version = "^5",
+            version = "^9",
             lazy = false,
         },
         install = {},
