@@ -1,11 +1,13 @@
-use clap::error::ErrorKind;
 use clap::{CommandFactory, Parser, Subcommand};
+use std::env;
+use std::fs;
+use std::io;
 
 #[cfg(not(test))]
 use std::process::Command;
 
 #[derive(Parser)]
-#[command(name = "ul-util")]
+#[command(name = "hl-util")]
 #[command(version, about, long_about = None)]
 #[command(propagate_version = true)]
 struct Cli {
@@ -113,6 +115,7 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
                     "&> build-log-output.txt"
                 );
 
+                println!("{}", shell_command);
                 Command::new("sh")
                     .arg("-c")
                     .arg(shell_command)
@@ -153,16 +156,31 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
 fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
     match command {
         Some(NixHostsSubCommands::BuildDevWsl {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            Command::new("sh")
+                .arg("-c")
+                .arg("nixos-rebuild switch --impure --flake path:nix-flakes/\"#dev-wsl\"")
+                .status()
+                .expect("error occured during build-dev-wsl-flake");
         }
         Some(NixHostsSubCommands::BuildDevBox {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            Command::new("sh")
+                .arg("-c")
+                .arg("nixos-rebuild switch --impure --flake path:nix-flakes/\"#dev-box\"")
+                .status()
+                .expect("error occured during build-dev-box-flake");
         }
         Some(NixHostsSubCommands::BuildDevBoxVm {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            Command::new("sh")
+                .arg("-c")
+                .arg("nixos-rebuild switch --impure --flake path:nix-flakes/\"#dev-box-vm\"")
+                .status()
+                .expect("error occured during build-dev-box-vm-flake");
         }
         _ => {
-            panic!("handler_nix_iso: critical error should never reach");
+            panic!("handler_nix_hosts: critical error should never reach");
         }
     }
 }
@@ -170,10 +188,15 @@ fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
 fn handler_nix_shells(command: &Option<NixShellsSubCommands>) {
     match command {
         Some(NixShellsSubCommands::StartTauri {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            Command::new("sh")
+                .arg("-c")
+                .arg("nix develop nix-flakes/\".#tuari\"")
+                .status()
+                .expect("error occured during build-dev-wsl-flake");
         }
         _ => {
-            panic!("handler_nix_iso: critical error should never reach");
+            panic!("handler_nix_shells: critical error should never reach");
         }
     }
 }
@@ -181,16 +204,75 @@ fn handler_nix_shells(command: &Option<NixShellsSubCommands>) {
 fn handler_nix(command: &Option<NixSubCommands>) {
     match command {
         Some(NixSubCommands::InitStruct {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            {
+                Command::new("sh")
+                    .arg("-c")
+                    .arg("cp -r scripts/ nix-flakes")
+                    .status()
+                    .expect("error occured during init-struct");
+
+                Command::new("sh")
+                    .arg("-c")
+                    .arg("cp -r dotfiles/ nix-flakes")
+                    .status()
+                    .expect("error occured during init-struct");
+            }
         }
         Some(NixSubCommands::ResyncStruct {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            {
+                Command::new("sh")
+                    .arg("-c")
+                    .arg("rsync -avh --delete scripts/ nix-flakes/scripts")
+                    .status()
+                    .expect("error occured during init-struct");
+
+                Command::new("sh")
+                    .arg("-c")
+                    .arg("resync -avh --delete dotfiles/ nix-flakes/dotfiles")
+                    .status()
+                    .expect("error occured during init-struct");
+            }
         }
         Some(NixSubCommands::CreateSecrets {}) => {
-            todo!("nix default not implemented");
+            match fs::remove_file("nix-flakes/secrets.nix") {
+                Ok(_) => {
+                    println!("remove secrets.nix");
+                }
+                Err(e) if e.kind() == io::ErrorKind::NotFound => {
+                    println!("no file to delete");
+                }
+                Err(_) => panic!("critical error during secrets.nix deletion"),
+            }
+            let home_drive = env::var("HOME").expect("unable to detect homedrive");
+
+            let dev_box_nixos_public_key_location =
+                format!("{}/.ssh/id_ed25519_dev_box_nixos.pub", home_drive);
+
+            let dev_box_aundre_public_key_location =
+                format!("{}/.ssh/id_ed25519_dev_box_aundre.pub", home_drive);
+
+            let dev_box_nixos_public_key_content =
+                fs::read_to_string(dev_box_nixos_public_key_location).expect("error loading file");
+
+            let dev_box_aundre_public_key_content =
+                fs::read_to_string(dev_box_aundre_public_key_location).expect("error loading file");
+
+            let l1 = format!("dev_box_nixos = {}", dev_box_nixos_public_key_content);
+            let l2 = format!("dev_box_aundre = {}", dev_box_aundre_public_key_content);
+            let secrets_nix_contents = format!("{{\n\t{}\t{}}}\r\n", l1, l2);
+
+            fs::write("nix-flakes/.secrets.nix", secrets_nix_contents)
+                .expect("had issue writing to file");
         }
         Some(NixSubCommands::Clean {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            Command::new("sh")
+                .arg("-c")
+                .arg("nix-collect-garbage -d")
+                .status()
+                .expect("error occured during init-struct");
         }
         _ => {
             panic!("handler_nix_iso: critical error should never reach");
@@ -201,6 +283,7 @@ fn handler_nix(command: &Option<NixSubCommands>) {
 mod tests {
     use super::*;
     use clap::Parser;
+    use clap::error::ErrorKind;
 
     const PROGRAM_NAME: &str = "hl-util";
 
