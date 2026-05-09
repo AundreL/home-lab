@@ -20,7 +20,8 @@
         
 		neovim
 		tmux
-        
+
+        fastfetch
         coreutils
         gnumake
         gcc

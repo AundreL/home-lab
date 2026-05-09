@@ -9,11 +9,16 @@
     ];
 
     networking.hostName = "dev-wsl";
-	wsl.enable = true;
+    time.timeZone = "Canada/Eastern";
     
-    environment.systemPackages = with pkgs; [
+    i18n.supportedLocales = [
+        "en_US.UTF-8/UTF-8"
     ];
-    
+
+    i18n.defaultLocale = "en_US.UTF-8";
+
+	wsl.enable = true;
+     
     # run this sequence after to resolve erorr that occurs when you change default user
     # wsl -t nixos
     # wsl -d nixos --user root exit

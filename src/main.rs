@@ -1,6 +1,9 @@
 use clap::error::ErrorKind;
 use clap::{CommandFactory, Parser, Subcommand};
 
+#[cfg(not(test))]
+use std::process::Command;
+
 #[derive(Parser)]
 #[command(name = "ul-util")]
 #[command(version, about, long_about = None)]
@@ -36,29 +39,40 @@ enum NixIsoSubCommands {
     #[command(about="build iso prod", long_about = None)]
     BuildIsoProd {},
     #[command(about="build iso dev", long_about = None)]
-    BuildIsoDev {},
+    BuildIsoDev {
+        #[arg(long)]
+        verbose: bool,
+    },
 }
 
 #[derive(Subcommand)]
 #[command(arg_required_else_help = true)]
 enum NixHostsSubCommands {
+    #[command(about="build dev wsl flake", long_about = None)]
     BuildDevWsl {},
+    #[command(about="build dev dev box flake", long_about = None)]
     BuildDevBox {},
+    #[command(about="build dev box vm flake", long_about = None)]
     BuildDevBoxVm {},
 }
 
 #[derive(Subcommand)]
 #[command(arg_required_else_help = true)]
 enum NixShellsSubCommands {
+    #[command(about="start a nix shell for tauri development", long_about = None)]
     StartTauri {},
 }
 
 #[derive(Subcommand)]
 #[command(arg_required_else_help = true)]
 enum NixSubCommands {
+    #[command(about="create/initialize secrets for home lab", long_about = None)]
     CreateSecrets {},
+    #[command(about="initialize folder structure for building home lab", long_about = None)]
     InitStruct {},
+    #[command(about="sync development files to build structure for building home lab", long_about = None)]
     ResyncStruct {},
+    #[command(about="clear all build objects to allow for fresh builds", long_about = None)]
     Clean {},
 }
 
@@ -73,13 +87,13 @@ fn hl_util(cli: Cli) {
             handler_nix_iso(subcommand);
         }
         Some(Commands::NixHosts { subcommand }) => {
-            todo!("nix-hosts default not implemented");
+            handler_nix_hosts(subcommand);
         }
         Some(Commands::NixShells { subcommand }) => {
-            todo!("nix-shells default not implemented");
+            handler_nix_shells(subcommand);
         }
         Some(Commands::Nix { subcommand }) => {
-            todo!("nix default not implemented");
+            handler_nix(subcommand);
         }
         _ => {
             Cli::command().print_help().unwrap();
@@ -90,10 +104,45 @@ fn hl_util(cli: Cli) {
 fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
     match command {
         Some(NixIsoSubCommands::BuildIsoProd {}) => {
-            todo!("nix default not implemented");
+            #[cfg(not(test))]
+            {
+                let shell_command = format!(
+                    "{} {} {}",
+                    "nix build --impure",
+                    "path:nix-flakes/\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
+                    "&> build-log-output.txt"
+                );
+
+                Command::new("sh")
+                    .arg("-c")
+                    .arg(shell_command)
+                    .status()
+                    .expect("failed to execute command");
+            }
         }
-        Some(NixIsoSubCommands::BuildIsoDev {}) => {
-            todo!("nix default not implemented");
+        Some(NixIsoSubCommands::BuildIsoDev { verbose }) => {
+            #[cfg(not(test))]
+            {
+                let mut nix_command = "";
+
+                if *verbose == true {
+                    nix_command = "nix build --verbose --impure";
+                } else {
+                    nix_command = "nix build --impure";
+                }
+
+                let shell_command = format!(
+                    "{} {}",
+                    nix_command,
+                    "path:nix-flakes/\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
+                );
+
+                Command::new("sh")
+                    .arg("-c")
+                    .arg(shell_command)
+                    .status()
+                    .expect("failed to execute command");
+            }
         }
         _ => {
             panic!("handler_nix_iso: critical error should never reach");
@@ -118,6 +167,36 @@ fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
     }
 }
 
+fn handler_nix_shells(command: &Option<NixShellsSubCommands>) {
+    match command {
+        Some(NixShellsSubCommands::StartTauri {}) => {
+            todo!("nix default not implemented");
+        }
+        _ => {
+            panic!("handler_nix_iso: critical error should never reach");
+        }
+    }
+}
+
+fn handler_nix(command: &Option<NixSubCommands>) {
+    match command {
+        Some(NixSubCommands::InitStruct {}) => {
+            todo!("nix default not implemented");
+        }
+        Some(NixSubCommands::ResyncStruct {}) => {
+            todo!("nix default not implemented");
+        }
+        Some(NixSubCommands::CreateSecrets {}) => {
+            todo!("nix default not implemented");
+        }
+        Some(NixSubCommands::Clean {}) => {
+            todo!("nix default not implemented");
+        }
+        _ => {
+            panic!("handler_nix_iso: critical error should never reach");
+        }
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -126,21 +205,47 @@ mod tests {
     const PROGRAM_NAME: &str = "hl-util";
 
     /*
-     * current make command       drafted   path_test   working       complete
-     *build-iso-prod                X           X
-     *build-nix-iso-dev             X           X
-     *build-nix-iso-verbose         X
-     *build-dev-wsl-flake           X
-     *build-dev-box-flake           X
-     *build-dev-box-vm-flake        X
-     *start-tuari-shell             X
-     *nix-init-struct(nix)          X
-     *nix-resync-struct(nix)        X
-     *nix-create-secrets            X
-     *nix-clean                     X
-     *default/help                  X
-     *
+     * project check list
+     * current make command     cli command             test-setup     drafted   path_test   mvp_test   complete
+     *build-iso-prod            build-iso-prod              X             X         X           X
+     *build-nix-iso-dev         build-iso-dev               X             X         X           X
+     *build-nix-iso-verbose     build-iso-dev --verbose     X             X         X           X
+     *<none>                    nix-hosts                   X             X         X
+     *build-dev-wsl-flake       nix-hosts build-dev-wsl     X             X         X
+     *build-dev-box-flake       nix-hosts build-dev-box     X             X         X
+     *build-dev-box-vm-flake    nix-hosts build-dev-box-vm  X             X         X
+     *start-tuari-shell         nix-shells start-tauri      X             X         X
+     *<none>                    nix                         X             X         X
+     *nix-init-struct(nix)      nix init-struct             X             X         X
+     *nix-resync-struct(nix)    nix resync-struct           X             X         X
+     *nix-create-secrets        nix create-secrets          X             X         X
+     *nix-clean                 nix clean                   X             X         X
+     *help                      --help                      X             X         X
+     *default                   <none>                      X             X         X
      */
+
+    #[test]
+    fn default() {
+        let args = vec![PROGRAM_NAME];
+        let cli = Cli::try_parse_from(args);
+
+        match &cli {
+            Ok(_result) => println!("should get here"),
+            Err(error) => panic!("unexpected error {}", error),
+        }
+    }
+
+    #[test]
+    fn help() {
+        let args = vec![PROGRAM_NAME, "--help"];
+        let cli = Cli::try_parse_from(args);
+
+        match &cli {
+            Ok(_result) => println!("should get here"),
+            Err(error) => assert_eq!(error.kind(), ErrorKind::DisplayHelp),
+        }
+    }
+
     #[test]
     fn nix_iso_default() {
         let args = vec![PROGRAM_NAME, "nix-iso"];
@@ -149,12 +254,10 @@ mod tests {
         match &cli {
             Ok(_result) => panic!("critical error unexpected cli parse path"),
             Err(error) => {
-                if error.kind() != ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand {
-                    panic!(
-                        "error_trigger: passed |  expected: DisplayHelpOnMissingArgumentOrSubcommand | got: {}",
-                        error
-                    );
-                }
+                assert_eq!(
+                    error.kind(),
+                    ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand
+                );
             }
         }
     }
@@ -194,6 +297,30 @@ mod tests {
     }
 
     #[test]
+    fn nix_iso_build_dev_verbose() {
+        let args = vec![PROGRAM_NAME, "nix-iso", "build-iso-dev", "--verbose"];
+        let cli = Cli::try_parse_from(args).unwrap();
+
+        hl_util(cli);
+    }
+
+    #[test]
+    fn nix_host_default() {
+        let args = vec![PROGRAM_NAME, "nix-hosts"];
+        let cli = Cli::try_parse_from(args);
+
+        match &cli {
+            Ok(_result) => panic!("critical error unexpected cli parse path"),
+            Err(error) => {
+                assert_eq!(
+                    error.kind(),
+                    ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand
+                );
+            }
+        }
+    }
+
+    #[test]
     fn nix_host_dev_wsl() {
         let args = vec![PROGRAM_NAME, "nix-hosts", "build-dev-wsl"];
         let cli = Cli::try_parse_from(args).unwrap();
@@ -206,15 +333,7 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix-hosts", "build-dev-box"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::NixHosts { subcommand }) => match subcommand {
-                Some(NixHostsSubCommands::BuildDevBox {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
+        hl_util(cli);
     }
 
     #[test]
@@ -222,15 +341,7 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix-hosts", "build-dev-box-vm"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::NixHosts { subcommand }) => match subcommand {
-                Some(NixHostsSubCommands::BuildDevBoxVm {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
+        hl_util(cli);
     }
 
     #[test]
@@ -238,14 +349,22 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix-shells", "start-tauri"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::NixShells { subcommand }) => match subcommand {
-                Some(NixShellsSubCommands::StartTauri {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
+        hl_util(cli);
+    }
+
+    #[test]
+    fn nix_default() {
+        let args = vec![PROGRAM_NAME, "nix"];
+        let cli = Cli::try_parse_from(args);
+
+        match &cli {
+            Ok(_result) => panic!("critical error unexpected cli parse path"),
+            Err(error) => {
+                assert_eq!(
+                    error.kind(),
+                    ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand
+                );
+            }
         }
     }
 
@@ -254,15 +373,7 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix", "init-struct"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::Nix { subcommand }) => match subcommand {
-                Some(NixSubCommands::InitStruct {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
+        hl_util(cli);
     }
 
     #[test]
@@ -270,15 +381,7 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix", "resync-struct"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::Nix { subcommand }) => match subcommand {
-                Some(NixSubCommands::ResyncStruct {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
+        hl_util(cli);
     }
 
     #[test]
@@ -286,15 +389,7 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix", "create-secrets"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::Nix { subcommand }) => match subcommand {
-                Some(NixSubCommands::CreateSecrets {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
+        hl_util(cli);
     }
 
     #[test]
@@ -302,14 +397,6 @@ mod tests {
         let args = vec![PROGRAM_NAME, "nix", "clean"];
         let cli = Cli::try_parse_from(args).unwrap();
 
-        match &cli.command {
-            Some(Commands::Nix { subcommand }) => match subcommand {
-                Some(NixSubCommands::Clean {}) => {
-                    todo!("not implemented");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
+        hl_util(cli);
     }
 }
