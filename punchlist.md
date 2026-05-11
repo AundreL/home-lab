@@ -6,5 +6,13 @@
 
 
 # release-0.0.6:
-- change makefile to custom rust utility tool
+- (done)change makefile to custom rust utility tool
+- (defer)refactor nix and nixos configuration
+
+# release-0.0.7:
+- (done)add vim keys to tmux config
+- (done)add telescope plugin to neovim
+- create test script for rust utility(hl-util)
+- add hl-util to nix enviroment with derivation
+- add result and error handling to hl-util
 - refactor nix and nixos configuration
