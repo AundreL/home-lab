@@ -231,7 +231,7 @@ fn handler_nix(command: &Option<NixSubCommands>) {
 
                 Command::new("sh")
                     .arg("-c")
-                    .arg("resync -avh --delete dotfiles/ nix-flakes/dotfiles")
+                    .arg("rsync -avh --delete dotfiles/ nix-flakes/dotfiles")
                     .status()
                     .expect("error occured during init-struct");
             }

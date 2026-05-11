@@ -27,14 +27,10 @@ require("lazy").setup({
 			"saghen/blink.cmp",
 			dependencies = "rafamadriz/friendly-snippets",
 			version = "1.*",
-
 			---@module 'blink.cmp'
 			---@type blink.cmp.Config
 			opts = {
 				keymap = { preset = "default" },
-				cmdline = {
-					enable = true,
-				},
 				appearance = {
 					use_nvim_cmp_as_default = true,
 					nerd_font_variant = "mono",
@@ -42,13 +38,21 @@ require("lazy").setup({
 				completion = {
 					documentation = { auto_show = false },
 				},
-				signature = { enabled = true },
 				sources = {
 					default = { "lsp", "path", "snippets", "buffer" },
 				},
 				fuzzy = { implementation = "prefer_rust_with_warning" },
 			},
 			opts_extend = { "sources.default" },
+		},
+		{
+			"nvim-telescope/telescope.nvim",
+			version = "*",
+			dependencies = {
+				"nvim-lua/plenary.nvim",
+				-- optional but recommended
+				{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			},
 		},
 		{
 			--colorscheme
@@ -115,14 +119,23 @@ vim.o.softtabstop = 4
 vim.o.shiftwidth = 4
 vim.o.expandtab = true
 vim.o.relativenumber = true
-vim.opt.termguicolors = true
 vim.o.timeoutlen = 500
 vim.o.updatetime = 1000
+
+vim.opt.termguicolors = true
+vim.opt.clipboard = "unnamedplus"
 
 vim.g.mapleader = " "
 vim.gnmaplocalleader = "\\"
 
 vim.api.nvim_set_keymap("n", "<leader>rn", "<cmd>set relativenumber!<cr>", { noremap = true, silent = true })
+
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
+vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
+vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
+vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
+
 vim.api.nvim_set_keymap("n", "<c-t>", ":FloatermToggle<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("t", "<c-t>", "<c-\\><c-n>:FloatermToggle<cr>", { noremap = true, silent = true })
 

@@ -20,6 +20,8 @@
         
 		neovim
 		tmux
+        ripgrep
+        fd
 
         fastfetch
         coreutils
