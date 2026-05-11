@@ -126,6 +126,7 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
         Some(NixIsoSubCommands::BuildIsoDev { verbose }) => {
             #[cfg(not(test))]
             {
+                #![allow(unused)]
                 let mut nix_command = "";
 
                 if *verbose == true {
@@ -259,9 +260,15 @@ fn handler_nix(command: &Option<NixSubCommands>) {
             let dev_box_aundre_public_key_content =
                 fs::read_to_string(dev_box_aundre_public_key_location).expect("error loading file");
 
-            let l1 = format!("dev_box_nixos = {}", dev_box_nixos_public_key_content);
-            let l2 = format!("dev_box_aundre = {}", dev_box_aundre_public_key_content);
-            let secrets_nix_contents = format!("{{\n\t{}\t{}}}\r\n", l1, l2);
+            let l1 = format!(
+                "dev_box_nixos = \"{}\";",
+                dev_box_nixos_public_key_content.trim()
+            );
+            let l2 = format!(
+                "dev_box_aundre = \"{}\";",
+                dev_box_aundre_public_key_content.trim()
+            );
+            let secrets_nix_contents = format!("{{\n\t{}\n\t{}\n}}\n", l1, l2);
 
             fs::write("nix-flakes/.secrets.nix", secrets_nix_contents)
                 .expect("had issue writing to file");
@@ -293,18 +300,18 @@ mod tests {
      *build-iso-prod            build-iso-prod              X             X         X           X
      *build-nix-iso-dev         build-iso-dev               X             X         X           X
      *build-nix-iso-verbose     build-iso-dev --verbose     X             X         X           X
-     *<none>                    nix-hosts                   X             X         X
-     *build-dev-wsl-flake       nix-hosts build-dev-wsl     X             X         X
-     *build-dev-box-flake       nix-hosts build-dev-box     X             X         X
-     *build-dev-box-vm-flake    nix-hosts build-dev-box-vm  X             X         X
-     *start-tuari-shell         nix-shells start-tauri      X             X         X
-     *<none>                    nix                         X             X         X
-     *nix-init-struct(nix)      nix init-struct             X             X         X
-     *nix-resync-struct(nix)    nix resync-struct           X             X         X
-     *nix-create-secrets        nix create-secrets          X             X         X
-     *nix-clean                 nix clean                   X             X         X
-     *help                      --help                      X             X         X
-     *default                   <none>                      X             X         X
+     *<none>                    nix-hosts                   X             X         X           X
+     *build-dev-wsl-flake       nix-hosts build-dev-wsl     X             X         X           X
+     *build-dev-box-flake       nix-hosts build-dev-box     X             X         X           X
+     *build-dev-box-vm-flake    nix-hosts build-dev-box-vm  X             X         X           X
+     *start-tuari-shell         nix-shells start-tauri      X             X         X           X
+     *<none>                    nix                         X             X         X           X
+     *nix-init-struct(nix)      nix init-struct             X             X         X           X
+     *nix-resync-struct(nix)    nix resync-struct           X             X         X           X
+     *nix-create-secrets        nix create-secrets          X             X         X           X
+     *nix-clean                 nix clean                   X             X         X           X
+     *help                      --help                      X             X         X           X
+     *default                   <none>                      X             X         X           X
      */
 
     #[test]

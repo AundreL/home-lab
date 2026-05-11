@@ -116,6 +116,8 @@ vim.o.shiftwidth = 4
 vim.o.expandtab = true
 vim.o.relativenumber = true
 vim.opt.termguicolors = true
+vim.o.timeoutlen = 500
+vim.o.updatetime = 1000
 
 vim.g.mapleader = " "
 vim.gnmaplocalleader = "\\"
