@@ -46,6 +46,7 @@ require("lazy").setup({
 			opts_extend = { "sources.default" },
 		},
 		{
+			-- tui search tool
 			"nvim-telescope/telescope.nvim",
 			version = "*",
 			dependencies = {
@@ -86,11 +87,17 @@ require("lazy").setup({
 				formatters_by_ft = {
 					lua = { "stylua" },
 					kdl = { "kdlfmt" },
+					nix = { "nixfmt" },
+					py = { "ruff " },
+				},
+				formatters = {
+					nixfmt = {
+						prepend_args = { "--indent", "4" },
+					},
 				},
 			},
 		},
 		{ "voldikss/vim-floaterm" },
-		{ "imsnif/kdl.vim" },
 		{ "neovim/nvim-lspconfig" },
 		{
 			"mrcjkb/rustaceanvim",
@@ -130,12 +137,17 @@ vim.gnmaplocalleader = "\\"
 
 vim.api.nvim_set_keymap("n", "<leader>rn", "<cmd>set relativenumber!<cr>", { noremap = true, silent = true })
 
+vim.lsp.enable("basedpyright")
+vim.lsp.enable("nil")
+vim.lsp.enable("lua-language-server")
+
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
 vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
 vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
 
+--FloatTerm
 vim.api.nvim_set_keymap("n", "<c-t>", ":FloatermToggle<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("t", "<c-t>", "<c-\\><c-n>:FloatermToggle<cr>", { noremap = true, silent = true })
 
@@ -159,10 +171,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 local bufnr = vim.api.nvim_get_current_buf()
+
 vim.keymap.set("n", "<leader>a", function()
 	vim.cmd.RustLsp("codeAction")
 end, { silent = true, buffer = bufnr })
-vim.opt.termguicolors = true
 
 vim.cmd([[highlight Floaterm guifg=white]])
 
