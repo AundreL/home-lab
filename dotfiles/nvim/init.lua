@@ -133,6 +133,7 @@ vim.o.updatetime = 1000
 
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
+vim.opt.swapfile = false
 
 vim.g.mapleader = " "
 vim.gnmaplocalleader = "\\"
