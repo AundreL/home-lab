@@ -86,9 +86,11 @@ require("lazy").setup({
 				},
 				formatters_by_ft = {
 					lua = { "stylua" },
-					kdl = { "kdlfmt" },
 					nix = { "nixfmt" },
 					py = { "ruff " },
+					sh = { "shfmt" },
+					bash = { "shfmt" },
+					fish = { "fish_indent" },
 				},
 				formatters = {
 					nixfmt = {

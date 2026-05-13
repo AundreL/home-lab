@@ -2,86 +2,91 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, home-manager, ... }:
+{
+    config,
+    lib,
+    pkgs-stable,
+    pkgs-unstable,
+    home-manager,
+    ...
+}:
 let
     dotfiles = ../../dotfiles;
     secrets = import ../../.secrets.nix;
-    home-manager = builtins.fetchTarball {
-        url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
-        sha256 = "1zvr96smn9xs56020424pfz91cxwlm8sv17rrav8qdhq670jm7qs";
-    };
 in
 {
     imports = [
         (import "${home-manager}/nixos")
     ];
- 
-	programs.fish.enable = true;
-	programs.starship.enable = true;
 
-	users.users.aundre =  builtins.trace "dotfiles location: ${dotfiles}" {
-		isNormalUser = true;
-		home = "/home/aundre";
-		extraGroups = [ "wheel" "networkmanager" ]; 
-		shell = pkgs.fish;
+    programs.fish.enable = true;
+    programs.starship.enable = true;
+
+    users.users.aundre = builtins.trace "dotfiles location: ${dotfiles}" {
+        isNormalUser = true;
+        home = "/home/aundre";
+        extraGroups = [
+            "wheel"
+            "networkmanager"
+        ];
+        shell = pkgs-stable.fish;
 
         openssh.authorizedKeys.keys = [
             secrets.dev_box_aundre
         ];
-	};
-	
-	home-manager.users.aundre = {
-		programs.neovim.enable = true;
-		programs.neovim.defaultEditor = true;
+    };
 
-		programs.git = {
-			enable = true;
+    home-manager.users.aundre = {
+        programs.neovim.defaultEditor = true;
+
+        programs.git = {
+            enable = true;
             settings = {
                 user.name = "Aundre Lattie";
                 user.email = "aundre@gmail.com";
                 core.editor = "nvim";
-            };   
-		};
-		
-		home.file = {
-			".config/nvim" = {
-				source = dotfiles + /nvim;
-				recursive = true;
-			};
-		};
-		
-		home.file = {
-			".ssh/config" = {
-				source = dotfiles + /ssh-config;
-			};
-		};
-		
-		home.file.".config/fish" = {
+            };
+        };
+
+        home.file = {
+            ".config/nvim" = {
+                source = dotfiles + /nvim;
+                recursive = true;
+            };
+        };
+
+        home.file = {
+            ".ssh/config" = {
+                source = dotfiles + /ssh-config;
+            };
+        };
+
+        home.file.".config/fish" = {
             source = dotfiles + /fish;
             recursive = true;
-		};
-		
-		home.file = {
-			".config/starship.toml" = {
-				source = dotfiles + /starship.toml;
-			};
-		};
-        
+        };
+
+        home.file = {
+            ".config/starship.toml" = {
+                source = dotfiles + /starship.toml;
+            };
+        };
+
         home.file = {
             ".tmux.conf" = {
                 source = dotfiles + /tmux/tmux.conf;
             };
         };
 
-		home.file = {
-			".config/zellij" = {
-				source = dotfiles + /zellij;
-				recursive = true;
-			};
-		};
-		
-		programs.home-manager.enable = true;
+        home.file = {
+            ".config/zellij" = {
+                source = dotfiles + /zellij;
+                recursive = true;
+            };
+        };
 
-		home.stateVersion = "25.11";
-	};
+        programs.home-manager.enable = true;
+
+        home.stateVersion = "25.11";
+    };
 }

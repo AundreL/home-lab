@@ -3,68 +3,84 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 {
-  config,
-  lib,
-  pkgs,
-  ...
+    config,
+    lib,
+    pkgs-stable,
+    pkgs-unstable,
+    home-manager,
+    ...
 }:
+let
+    stable-packages = with pkgs-stable; [
+        # core cli tool
+        # openssh
+        git
+        coreutils
+        gnumake
+        gcc
+
+        # modern cli tools
+        fastfetch
+        tree
+        fd
+        ripgrep
+
+        #language interpretors, formatters and lsp
+
+        shfmt
+
+        nil # nix lsp
+        nixfmt
+
+        python3
+        basedpyright
+        ruff # python formatter
+
+        cargo
+        rustfmt
+        rust-analyzer
+
+        lua
+        stylua # lua formatter
+        lua-language-server # lua lsp
+
+    ];
+
+    unstable-packages = with pkgs-unstable; [
+        #development tools
+        pkgs-unstable.tmux
+        pkgs-unstable.neovim
+    ];
+in
 {
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nixpkgs.config.allowUnfree = true;
+    nix.settings.experimental-features = [
+        "nix-command"
+        "flakes"
+    ];
 
-  environment.systemPackages = with pkgs; [
-    openssh
-    git
-    coreutils
-    gnumake
-    gcc
+    nixpkgs.config.allowUnfree = true;
 
-    fastfetch
-    tree
-    fd
-    ripgrep
+    environment.systemPackages = stable-packages ++ unstable-packages;
 
-    tmux
-    neovim
+    services.openssh.enable = true;
 
-    nil # nix lsp
-    nixfmt
+    # This option defines the first version of NixOS you have installed on this particular machine,
+    # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
+    #
+    # Most users should NEVER change this value after the initial install, for any reason,
+    # even if you've upgraded your system to a new NixOS release.
+    #
+    # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
+    # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
+    # to actually do that.
+    #
+    # This value being lower than the current NixOS release does NOT mean your system is
+    # out of date, out of support, or vulnerable.
+    # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
+    # and migrated your data accordingly.
+    #
+    # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
 
-    python3
-    basedpyright
-    ruff # python formatter
-
-    cargo
-    rustfmt
-    rust-analyzer
-
-    lua
-    stylua # lua formatter
-    lua-language-server # lua lsp
-  ];
-
-  services.openssh.enable = true;
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-
-  # Do not modify or remove this configuation setting, above comment explains why.
-  system.stateVersion = "25.11";
+    # Do not modify or remove this configuation setting, above comment explains why.
+    system.stateVersion = "25.11";
 }
