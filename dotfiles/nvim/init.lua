@@ -22,6 +22,8 @@ vim.opt.rtp:prepend(lazypath)
 -- setup lazy.nvim
 require("lazy").setup({
 	spec = {
+		{ "neovim/nvim-lspconfig" },
+		{ "chentoast/marks.nvim", event = "VeryLazy", opts = {} },
 		{
 			--auto complete
 			"saghen/blink.cmp",
@@ -99,8 +101,6 @@ require("lazy").setup({
 				},
 			},
 		},
-		{ "voldikss/vim-floaterm" },
-		{ "neovim/nvim-lspconfig" },
 		{
 			"mrcjkb/rustaceanvim",
 			server = {
@@ -131,7 +131,7 @@ vim.o.relativenumber = true
 vim.o.timeoutlen = 500
 vim.o.updatetime = 1000
 
-vim.opt.signcolumn = "yes:1"
+vim.opt.signcolumn = "yes:2"
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
 vim.opt.swapfile = false
@@ -147,16 +147,7 @@ vim.lsp.enable("basedpyright")
 vim.lsp.enable("nil")
 vim.lsp.enable("lua-language-server")
 
-local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
-vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
-vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
-vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
-
---FloatTerm
-vim.api.nvim_set_keymap("n", "<c-t>", ":FloatermToggle<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("t", "<c-t>", "<c-\\><c-n>:FloatermToggle<cr>", { noremap = true, silent = true })
-
+-- fix cursor shape on exit
 local restore_cursor_augroup = vim.api.nvim_create_augroup("restore_cursor_shape_on_exit", { clear = true })
 
 vim.api.nvim_create_autocmd({ "vimleave" }, {
@@ -165,6 +156,7 @@ vim.api.nvim_create_autocmd({ "vimleave" }, {
 	command = "set guicursor=a:ver20",
 })
 
+-- conform formatter
 local format_group = vim.api.nvim_create_augroup("format_on_write", { clear = true })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -178,11 +170,17 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 local bufnr = vim.api.nvim_get_current_buf()
 
+-- telescope
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
+vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
+vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
+vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
+
+-- rustlsp
 vim.keymap.set("n", "<leader>a", function()
 	vim.cmd.RustLsp("codeAction")
 end, { silent = true, buffer = bufnr })
-
-vim.cmd([[highlight Floaterm guifg=white]])
 
 --vim.cmd([[highlight Normal guibg=#282828]])
 --vim.cmd([[highlight MsgArea guibg=#282828]])
