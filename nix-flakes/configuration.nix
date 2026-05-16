@@ -18,6 +18,7 @@ let
         coreutils
         gnumake
         gcc
+        xclip
 
         # modern cli tools
         fastfetch

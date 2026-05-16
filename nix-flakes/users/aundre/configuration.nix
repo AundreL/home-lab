@@ -78,13 +78,6 @@ in
             };
         };
 
-        home.file = {
-            ".config/zellij" = {
-                source = dotfiles + /zellij;
-                recursive = true;
-            };
-        };
-
         programs.home-manager.enable = true;
 
         home.stateVersion = "25.11";

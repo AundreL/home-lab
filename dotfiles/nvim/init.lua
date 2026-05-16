@@ -131,9 +131,10 @@ vim.o.relativenumber = true
 vim.o.timeoutlen = 500
 vim.o.updatetime = 1000
 
+vim.opt.clipboard = "unnamedplus"
+
 vim.opt.signcolumn = "yes:2"
 vim.opt.termguicolors = true
-vim.opt.clipboard = "unnamedplus"
 vim.opt.swapfile = false
 vim.opt.wrap = false
 vim.opt.scrolloff = 20 -- Keep 10 lines of context above/below'
