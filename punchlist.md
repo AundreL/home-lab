@@ -12,6 +12,23 @@
 # release-0.0.7:
 - (done)add vim keys to tmux config
 - (done)add telescope plugin to neovim
+- (defer)create test script for rust utility(hl-util)
+- (defer)add hl-util to nix enviroment with derivation
+- (defer)add result and error handling to hl-util
+- (defer)refactor nix and nixos configuration
+
+# release-0.0.8:
+- (done) add yazi to nvim config and terminal
+- (done) add fzf to terminal
+- (done) add harpoon to neovim
+- (done) setup xclip and config neovim, fish and tmux to work with it
+- (done) setup fish script to start up tmux with default layout for development
+- (defer)create test script for rust utility(hl-util)
+- (defer)add hl-util to nix enviroment with derivation
+- (defer)add result and error handling to hl-util
+- (defer)refactor nix and nixos configuration
+
+# release-0.0.9:
 - create test script for rust utility(hl-util)
 - add hl-util to nix enviroment with derivation
 - add result and error handling to hl-util

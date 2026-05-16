@@ -22,10 +22,12 @@ vim.opt.rtp:prepend(lazypath)
 -- setup lazy.nvim
 require("lazy").setup({
 	spec = {
+		--lsp
 		{ "neovim/nvim-lspconfig" },
+		--bookmark manager
 		{ "chentoast/marks.nvim", event = "VeryLazy", opts = {} },
+		--auto complete
 		{
-			--auto complete
 			"saghen/blink.cmp",
 			dependencies = "rafamadriz/friendly-snippets",
 			version = "1.*",
@@ -47,8 +49,58 @@ require("lazy").setup({
 			},
 			opts_extend = { "sources.default" },
 		},
+		-- file explorer
 		{
-			-- tui search tool
+			"mikavilpas/yazi.nvim",
+			version = "*", -- use the latest stable version
+			event = "VeryLazy",
+			dependencies = {
+				{ "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim", lazy = true },
+			},
+			keys = {
+				-- 👇 in this section, choose your own keymappings!
+				{
+					"<leader>-",
+					mode = { "n", "v" },
+					"<cmd>Yazi<cr>",
+					desc = "Open yazi at the current file",
+				},
+				{
+					-- Open in the current working directory
+					"<leader>cw",
+					"<cmd>Yazi cwd<cr>",
+					desc = "Open the file manager in nvim's working directory",
+				},
+				{
+					"<c-up>",
+					"<cmd>Yazi toggle<cr>",
+					desc = "Resume the last yazi session",
+				},
+			},
+			---@type YaziConfig | {}
+			opts = {
+				-- if you want to open yazi instead of netrw, see below for more info
+				open_for_directories = false,
+				keymaps = {
+					show_help = "<f1>",
+				},
+			},
+			-- 👇 if you use `open_for_directories=true`, this is recommended
+			init = function()
+				-- mark netrw as loaded so it's not loaded at all.
+				--
+				-- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
+				vim.g.loaded_netrwPlugin = 1
+			end,
+		},
+		-- tool to help moving through files
+		{
+			"ThePrimeagen/harpoon",
+			branch = "harpoon2",
+			dependencies = { "nvim-lua/plenary.nvim" },
+		},
+		-- tui search tool
+		{
 			"nvim-telescope/telescope.nvim",
 			version = "*",
 			dependencies = {
@@ -57,8 +109,8 @@ require("lazy").setup({
 				{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 			},
 		},
+		--colorscheme
 		{
-			--colorscheme
 			"fcancelinha/nordern.nvim",
 			branch = "master",
 			priority = 1000,
@@ -72,8 +124,8 @@ require("lazy").setup({
 				vim.cmd.colorscheme("nordern")
 			end,
 		},
+		--formatter
 		{
-			--formatter
 			"stevearc/conform.nvim",
 			opts = {
 				default_format_opts = {
@@ -101,6 +153,7 @@ require("lazy").setup({
 				},
 			},
 		},
+		-- rust plugin
 		{
 			"mrcjkb/rustaceanvim",
 			server = {
@@ -178,8 +231,43 @@ vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live gr
 vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
 
--- rustlsp
+-- harpoon
+local harpoon = require("harpoon")
+
+-- REQUIRED
+harpoon:setup()
+-- REQUIRED
+
 vim.keymap.set("n", "<leader>a", function()
+	harpoon:list():add()
+end)
+vim.keymap.set("n", "<C-e>", function()
+	harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
+
+vim.keymap.set("n", "<C-h>", function()
+	harpoon:list():select(1)
+end)
+vim.keymap.set("n", "<C-t>", function()
+	harpoon:list():select(2)
+end)
+vim.keymap.set("n", "<C-n>", function()
+	harpoon:list():select(3)
+end)
+vim.keymap.set("n", "<C-s>", function()
+	harpoon:list():select(4)
+end)
+
+-- Toggle previous & next buffers stored within Harpoon list
+vim.keymap.set("n", "<C-S-P>", function()
+	harpoon:list():prev()
+end)
+vim.keymap.set("n", "<C-S-N>", function()
+	harpoon:list():next()
+end)
+
+-- rustlsp
+vim.keymap.set("n", "<leader>ra", function()
 	vim.cmd.RustLsp("codeAction")
 end, { silent = true, buffer = bufnr })
 

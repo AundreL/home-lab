@@ -25,25 +25,32 @@ let
         tree
         fd
         ripgrep
+        fzf
+        yazi
+
+        python3
+        lua
+        cargo
 
         #language interpretors, formatters and lsp
 
-        shfmt
+        #bash
+        shfmt # bash formatter
 
+        #nix
         nil # nix lsp
-        nixfmt
+        nixfmt # nix formatter
 
-        python3
-        basedpyright
+        #python
+        basedpyright # bash lsp
         ruff # python formatter
 
-        cargo
-        rustfmt
-        rust-analyzer
+        #rust
+        rust-analyzer # rust lsp
+        rustfmt # rust formatter
 
-        lua
-        stylua # lua formatter
         lua-language-server # lua lsp
+        stylua # lua formatter
 
     ];
 
