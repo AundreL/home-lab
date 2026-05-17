@@ -80,9 +80,6 @@
                 ];
             };
 
-            #to-do
-            #implement the hosts control-node and worker-node
-
             devShells.x86_64-linux.tauri = pkgs-stable.mkShell {
                 nativeBuildInputs = with pkgs-stable; [
                     pkg-config

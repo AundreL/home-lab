@@ -27,6 +27,7 @@ let
         ripgrep
         fzf
         yazi
+        htop
 
         python3
         lua

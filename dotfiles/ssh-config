@@ -28,3 +28,15 @@ Host dev_box
     User aundre
     Port 22
     IdentityFile ~/.ssh/id_ed25519_dev_box_aundre
+
+Host hl_node_1_nixos
+    Host 10.0.0.26
+    User nixos
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_dev_box_nixos
+
+Host hl_node_1_aundre
+    Host 10.0.0.26
+    User nixos
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_dev_box_aundre

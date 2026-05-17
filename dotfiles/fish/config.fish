@@ -4,19 +4,28 @@ end
 
 fish_vi_key_bindings
 
-alias reloadfish="source ~/.config/fish/config.fish"
-alias reloadtmux="tmux source-file ~/.tmux.conf"
-alias tree="tree -C"
-
 bind -M insert \co accept-autosuggestion
+
+set -gx EDITOR nvim
 
 # Example: bind 'yy' in vi-mode to system clipboard copy
 bind -M default yy fish_clipboard_copy
 # Example: bind 'p' in vi-mode to system clipboard paste
+
 bind -M default p fish_clipboard_paste
+alias reloadfish="source ~/.config/fish/config.fish"
+alias reloadtmux="tmux source-file ~/.tmux.conf"
+alias tree="tree -C"
 
-set -gx EDITOR nvim
-
+function yazi-nvim
+    nvim (yazi --chooser-file=/dev/stdout)
+end
+function fzf-nvim
+    set -l files (fzf --multi)
+    if test -n "$files"
+        nvim -p $files
+    end
+end
 # tmux config
 alias tmux-pane-size="tmux display -p '#{pane_width}x#{pane_height}'"
 alias end-dev="tmux kill-session -t dev-environment"
