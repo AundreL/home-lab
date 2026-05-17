@@ -1,4 +1,9 @@
-#config setup
+#prevent freezing terminals on server shutdown
+#by adding ttl
+Host *
+    ServerAliveInterval 15
+    ServerAliveCountMax 3
+
 Host github.com
     HostName github.com
     User git
