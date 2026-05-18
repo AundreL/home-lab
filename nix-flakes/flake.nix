@@ -21,11 +21,14 @@
             pkgs-stable = nixpkgs-stable.legacyPackages.${system};
             pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
 
+            secrets = ./.secrets.nix;
+
             defaultModuleArgs = {
-                inherit pkgs-unstable; # Pass unstable to modules
+                inherit pkgs-unstable; # pass unstable to modules
                 inherit pkgs-stable;
                 inherit home-manager;
             };
+
         in
         {
             nixosConfigurations.iso-installer = nixpkgs-stable.lib.nixosSystem {

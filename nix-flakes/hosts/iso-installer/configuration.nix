@@ -1,5 +1,10 @@
-{ config, pkgs, lib, ... }:
-let 
+{
+    config,
+    pkgs,
+    lib,
+    ...
+}:
+let
     iso-utils = derivation {
         name = "iso-utils";
         system = builtins.currentSystem;
@@ -11,7 +16,7 @@ let
             "-c"
             ''
                 export PATH=$PATH:${pkgs.coreutils}/bin
-                
+
                 mkdir -p $out/etc/iso-utils
                 mkdir -p $out/bin
                 echo $out >&2
@@ -19,12 +24,12 @@ let
                  
                 #cp -r $scripts_dir/. $out/bin/
                 #chmod -R 777 $out/bin/
-                
+
                 echo "flake_dir: $flake_dir"
                 echo "scripts_dir: $scripts_dir"
                 echo "dotfiles_dir: $dotfiles_dir"
                 echo "derivation location: $out"
-                
+
                 for file in $scripts_dir/*.sh; do
                     echo "loop tracker $file"
                     basefile=$(basename -- ''${file%.sh})
@@ -32,13 +37,13 @@ let
                     cp $file $out/bin/$basefile
                     chmod 777 $out/bin/$basefile
                 done
-                
+
                 mkdir -p $out/etc/iso-utils/flakes/dotfiles
                 cp -r $flake_dir/. $out/etc/iso-utils/flakes
             ''
         ];
     };
-        
+
     home-manager = builtins.fetchTarball {
         url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
         sha256 = "1zvr96smn9xs56020424pfz91cxwlm8sv17rrav8qdhq670jm7qs";
@@ -52,14 +57,17 @@ in
         <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
         <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
     ];
-     
+
     i18n.supportedLocales = [
         "en_US.UTF-8/UTF-8"
     ];
 
     i18n.defaultLocale = "en_US.UTF-8";
 
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    nix.settings.experimental-features = [
+        "nix-command"
+        "flakes"
+    ];
     nixpkgs.config.allowUnfree = true;
 
     security.sudo.wheelNeedsPassword = false;
@@ -72,9 +80,10 @@ in
 
         openssh.authorizedKeys.keys = [
             secrets.dev_box_nixos
+            secrets.cluster_node_nixos
         ];
     };
-    
+
     home-manager.users.nixos = {
         home.stateVersion = "25.11";
     };
@@ -84,7 +93,7 @@ in
             source = "${iso-utils}/etc/iso-utils/";
         };
     };
-    
+
     environment.systemPackages = with pkgs; [
         git
         gnumake
@@ -94,6 +103,7 @@ in
         curl
         neovim
         iso-utils
+        htop
     ];
 
     programs.fish = {
@@ -102,7 +112,7 @@ in
             fish_vi_key_bindings
         '';
     };
-  
+
     services.openssh = {
         enable = true;
         ports = [ 22 ];

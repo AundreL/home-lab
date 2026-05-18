@@ -201,6 +201,17 @@ vim.lsp.enable("basedpyright")
 vim.lsp.enable("nil")
 vim.lsp.enable("lua-language-server")
 
+-- Normal and Visual mode mappings to send deletions to the black hole register
+vim.keymap.set({ "n", "v" }, "d", '"_d')
+vim.keymap.set({ "n", "v" }, "D", '"_D')
+vim.keymap.set({ "n", "v" }, "c", '"_c')
+vim.keymap.set({ "n", "v" }, "C", '"_C')
+vim.keymap.set({ "n", "v" }, "x", '"_x')
+vim.keymap.set({ "n", "v" }, "X", '"_X')
+
+-- Optional: Preserve your yank behavior when pasting over selected text in Visual mode
+vim.keymap.set("v", "p", '"_dP')
+
 -- fix cursor shape on exit
 local restore_cursor_augroup = vim.api.nvim_create_augroup("restore_cursor_shape_on_exit", { clear = true })
 

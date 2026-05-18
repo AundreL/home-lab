@@ -254,11 +254,25 @@ fn handler_nix(command: &Option<NixSubCommands>) {
             let dev_box_aundre_public_key_location =
                 format!("{}/.ssh/id_ed25519_dev_box_aundre.pub", home_drive);
 
+            let cluster_node_nixos_public_key_location =
+                format!("{}/.ssh/id_ed25519_cluster_node_nixos.pub", home_drive);
+
+            let cluster_node_node_public_key_location =
+                format!("{}/.ssh/id_ed25519_cluster_node_node.pub", home_drive);
+
             let dev_box_nixos_public_key_content =
                 fs::read_to_string(dev_box_nixos_public_key_location).expect("error loading file");
 
             let dev_box_aundre_public_key_content =
                 fs::read_to_string(dev_box_aundre_public_key_location).expect("error loading file");
+
+            let cluster_node_nixos_public_key_content =
+                fs::read_to_string(cluster_node_nixos_public_key_location)
+                    .expect("error loading file");
+
+            let cluster_node_node_public_key_content =
+                fs::read_to_string(cluster_node_node_public_key_location)
+                    .expect("error loading file");
 
             let l1 = format!(
                 "dev_box_nixos = \"{}\";",
@@ -268,7 +282,16 @@ fn handler_nix(command: &Option<NixSubCommands>) {
                 "dev_box_aundre = \"{}\";",
                 dev_box_aundre_public_key_content.trim()
             );
-            let secrets_nix_contents = format!("{{\n\t{}\n\t{}\n}}\n", l1, l2);
+            let l3 = format!(
+                "cluster_node_nixos = \"{}\";",
+                cluster_node_nixos_public_key_content.trim()
+            );
+            let l4 = format!(
+                "cluster_node_node = \"{}\";",
+                cluster_node_node_public_key_content.trim()
+            );
+
+            let secrets_nix_contents = format!("{{\n\t{}\n\t{}\n\t{}\n\t{}\n}}\n", l1, l2, l3, l4);
 
             fs::write("nix-flakes/.secrets.nix", secrets_nix_contents)
                 .expect("had issue writing to file");
