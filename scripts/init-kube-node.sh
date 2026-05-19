@@ -1,48 +1,67 @@
 #! /usr/bin/env bash
 
+# exit immediately if a command exits with a non-zero status
+set -e
+
+# target disk
 echo -e "\e[1;32mpartition setup\e[0m"
 
-sfdisk --delete /dev/sda
+DISK="/dev/sda"
+PART_BOOT="${DISK}1"
+PART_ROOT="${DISK}2"
 
-fdisk /dev/sda <<EOF
-g
-n
-1
-2048
-+500M
-t
-1
-n
-2
+#sgdisk --zap-all /dev/sda
+#blockdev --rereadpt /dev/sda
 
+echo -e "\e[1;34msetp 1: partitioning ${DISK} via sfdisk...\e[0m"
 
-w
+# create gpt label and partitions non-interactively
+sfdisk "$DISK" <<EOF
+label:gpt
+
+# Partition 1: Boot/EFI (500MB)
+, 500M, U, *
+
+# Partition 2: Root/Data (Rest of the disk)
+,,L
 EOF
 
-echo -e "\e[1;32mfile system setup\e[0m"
+# force kernel wait and register the new partition table
+udevadm settle
 
-mkfs.fat -F 32 /dev/sda1 -n NIXBOOT
-mkfs.ext4 /dev/sda2 -L NIXROOT <<EOF
-y
-EOF
+echo -e "\e[1;32mstep 2: formatting filesystems...\e[0m"
+# format efi partition as fat32
+mkfs.fat -F 32 "$PART_BOOT" -n NIXBOOT
 
-echo -e "\e[1;32mmounting file systems\e[0m"
+# format root partition as ext4 (-f forces overwrite if signatures exist)
+mkfs.ext4 -F "$PART_ROOT" -L NIXROOT
+
+echo -e "\e[1;32mstep 3: mounting filesystems for NixOS installation...\e[0m"
+
+# mount the root partition to /mnt
 mount /dev/disk/by-label/NIXROOT /mnt
 
-mkdir -p /mnt/boot
+# mount the efi partition
+mkdir /mnt/boot
 mount /dev/disk/by-label/NIXBOOT /mnt/boot
 
 lsblk -f
-echo -e "\e[1;32mswap setup\e[0m"
 
-dd if=/dev/zero of=/mnt/.swapfile bs=1024 count=2097152
-chmod 600 /mnt/.swapfile
+echo -e "\e[1;34mstep 4: creating 8GB swap file for compilation stability...\e[0m"
+# instantly allocate 8gb space on the target filesystem
 
-mkswap -L NIXSWAP /mnt/.swapfile
-swapon /mnt/.swapfile
+fallocate -l 8G /mnt/swapfile
 
-echo -e "\e[1;32starting nixos installation\e[0m"
+# secure the file (critical: swap files must be 600)
+chmod 600 /mnt/swapfile
 
+# label and format the swap space
+mkswap -L NIXSWAP /mnt/swapfile
+swapon /mnt/swapfile
+
+echo -e "\e[1;32mstep 5: starting NixOS installation...\e[0m"
 cd /mnt
+# run the installation using your target flake
+nixos-install --impure --flake /etc/iso-utils/flakes#kube-node
 
-nixos-install --impure --flake  /etc/iso-utils/flakes#kube-node
+echo -e "\e[1;34mDisk preparation and installation process complete!\e[0m"
