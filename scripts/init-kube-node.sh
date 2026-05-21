@@ -16,7 +16,7 @@ PART_ROOT="${DISK}2"
 echo -e "\e[1;34msetp 1: partitioning ${DISK} via sfdisk...\e[0m"
 
 # create gpt label and partitions non-interactively
-sfdisk "$DISK" <<EOF
+sfdisk --force "$DISK" <<EOF
 label:gpt
 
 # Partition 1: Boot/EFI (500MB)
