@@ -1,5 +1,4 @@
 build-stage
-result
 build-log-output.txt
 secrets
 dotfiles
@@ -7,3 +6,4 @@ dotfiles
 # Added by cargo
 
 /target
+/result

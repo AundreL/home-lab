@@ -29,8 +29,8 @@
 - (defer)refactor nix and nixos configuration
 
 # release-0.0.9:
-(done)- create nixos configuration for homelab cluster nodes
-- seperate dotfiles into own project
+(done) create nixos configuration for homelab cluster nodes
+(done) seperate dotfiles into own project
 - create test script for rust utility(hl-util)
 - add hl-util to nix enviroment with derivation
 - add result and error handling to hl-util
