@@ -27,7 +27,9 @@ in
     ];
     nixpkgs.config.allowUnfree = true;
 
-    environment.systemPackages = with pkgs; [ ];
+    environment.systemPackages = with pkgs; [
+        efibootmgr
+    ];
 
     programs.fish.enable = true;
     programs.starship.enable = true;
@@ -45,6 +47,7 @@ in
         ];
     };
 
+    services.fwupd.enable = true;
     services.openssh = {
         enable = true;
         ports = [ 22 ];

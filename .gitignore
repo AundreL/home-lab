@@ -2,9 +2,8 @@ build-stage
 result
 build-log-output.txt
 secrets
-
+dotfiles
 
 # Added by cargo
 
 /target
-
