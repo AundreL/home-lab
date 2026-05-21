@@ -225,13 +225,13 @@ fn handler_nix(command: &Option<NixSubCommands>) {
             {
                 Command::new("sh")
                     .arg("-c")
-                    .arg("rsync -avh --delete scripts/ nix-flakes/scripts")
+                    .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" scripts/ nix-flakes/scripts")
                     .status()
                     .expect("error occured during init-struct");
 
                 Command::new("sh")
                     .arg("-c")
-                    .arg("rsync -avh --delete dotfiles/ nix-flakes/dotfiles")
+                    .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" dotfiles/ nix-flakes/dotfiles")
                     .status()
                     .expect("error occured during init-struct");
             }
