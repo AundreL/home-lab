@@ -5,6 +5,10 @@
         nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
         nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
         home-manager.url = "github:nix-community/home-manager/release-25.11";
+        aundre-dotfiles = {
+            url = "github:AundreL/dotfiles";
+            flake = false;
+        };
     };
 
     outputs =
@@ -13,6 +17,7 @@
             nixpkgs-stable,
             nixpkgs-unstable,
             home-manager,
+            aundre-dotfiles,
             ...
         }@inputs:
         let
@@ -64,7 +69,10 @@
 
             nixosConfigurations.dev-wsl = nixpkgs-stable.lib.nixosSystem {
                 system = system;
-                specialArgs = defaultModuleArgs;
+                specialArgs = defaultModuleArgs // {
+                    inherit aundre-dotfiles;
+                };
+
                 modules = [
                     ./configuration.nix
                     ./hosts/dev-wsl/configuration.nix

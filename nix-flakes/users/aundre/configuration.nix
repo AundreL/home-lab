@@ -8,10 +8,11 @@
     pkgs-stable,
     pkgs-unstable,
     home-manager,
+    aundre-dotfiles,
     ...
 }:
 let
-    dotfiles = ../../dotfiles;
+    dotfiles = aundre-dotfiles;
     secrets = import ../../.secrets.nix;
 in
 {

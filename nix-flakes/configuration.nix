@@ -28,6 +28,9 @@ let
         fzf
         yazi
         htop
+        bat
+        eza
+        procs
 
         python3
         lua
