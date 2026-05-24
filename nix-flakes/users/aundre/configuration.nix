@@ -12,7 +12,6 @@
     ...
 }:
 let
-    dotfiles = aundre-dotfiles;
     secrets = import ../../.secrets.nix;
 in
 {
@@ -23,7 +22,7 @@ in
     programs.fish.enable = true;
     programs.starship.enable = true;
 
-    users.users.aundre = builtins.trace "dotfiles location: ${dotfiles}" {
+    users.users.aundre = builtins.trace "dotfiles location: ${aundre-dotfiles}" {
         isNormalUser = true;
         home = "/home/aundre";
         extraGroups = [
@@ -51,31 +50,31 @@ in
 
         home.file = {
             ".config/nvim" = {
-                source = dotfiles + /nvim;
+                source = aundre-dotfiles + /nvim;
                 recursive = true;
             };
         };
 
         home.file = {
             ".ssh/config" = {
-                source = dotfiles + /ssh-config;
+                source = aundre-dotfiles + /ssh-config;
             };
         };
 
         home.file.".config/fish" = {
-            source = dotfiles + /fish;
+            source = aundre-dotfiles + /fish;
             recursive = true;
         };
 
         home.file = {
             ".config/starship.toml" = {
-                source = dotfiles + /starship.toml;
+                source = aundre-dotfiles + /starship.toml;
             };
         };
 
         home.file = {
             ".tmux.conf" = {
-                source = dotfiles + /tmux/tmux.conf;
+                source = aundre-dotfiles + /tmux/tmux.conf;
             };
         };
 

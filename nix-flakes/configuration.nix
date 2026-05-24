@@ -19,6 +19,7 @@ let
         gnumake
         gcc
         xclip
+        starship
 
         # modern cli tools
         fastfetch
