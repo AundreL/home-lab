@@ -1,9 +1,11 @@
 use clap::{CommandFactory, Parser, Subcommand};
 
 #[cfg(not(test))]
-use std::{env, fs, io};
+use std::{fs, io};
 
-use std::path::Path;
+use std::error::Error;
+use std::path::PathBuf;
+use std::{env, fs};
 
 use std::process::Command;
 
@@ -324,11 +326,47 @@ fn handler_nix(command: &Option<NixSubCommands>) {
     }
 }
 
-fn manage_secret(str_path: &str) {
+fn manage_secret(key_name: &str) -> Result<String, Box<dyn Error>> {
     //create path
-    let path_path = Path::new(str_path);
 
-    if !path_path.exists() {}
+    let mut ssh_key_location = env::var_os("HOME")
+        .map(PathBuf::from)
+        .expect("error getting user home");
+
+    ssh_key_location.push(".ssh");
+    ssh_key_location.push(format!("id_ed25519_{}", &key_name));
+
+    let sterile_string_for_args: String = ssh_key_location
+        .clone()
+        .into_os_string()
+        .into_string()
+        .expect("error turning path to string");
+
+    if !ssh_key_location.exists() {
+        let mut generate_ssh_key = Command::new("ssh-keygen");
+        generate_ssh_key.args([
+            "-q",
+            "-t",
+            "ed25519",
+            "-N",
+            "''",
+            "-f",
+            &sterile_string_for_args,
+        ]);
+
+        match generate_ssh_key.status() {
+            Ok(_) => {
+                #[cfg(test)]
+                println!(" success {:?}", generate_ssh_key);
+            }
+            Err(error) => {
+                eprintln!("error creating key {:?}", generate_ssh_key);
+                return Err(Box::new(error));
+            }
+        }
+    }
+
+    return Ok(String::new());
     //check if the ssh key exists by checking .ssh file for user
     //if it does not exists create ssh-key
     //if exists do nothing
@@ -528,6 +566,38 @@ mod tests {
         let cli = Cli::try_parse_from(args).unwrap();
 
         hl_util(cli);
+    }
+
+    #[test]
+    fn test_manage_secret() {
+        //setup the test
+        let test_key = "test_key";
+
+        let mut expected_ssh_key_private_location = env::var_os("HOME")
+            .map(PathBuf::from)
+            .expect("error getting user home");
+
+        expected_ssh_key_private_location.push(".ssh");
+
+        let mut expected_ssh_key_public_location = expected_ssh_key_private_location.clone();
+
+        expected_ssh_key_private_location.push("id_ed25519_test_key");
+        expected_ssh_key_public_location.push("id_ed25519_test_key.pub");
+
+        println!("{:?}", expected_ssh_key_private_location);
+
+        let nix_field = manage_secret(test_key).expect("error during secret management");
+
+        todo!("make method read string");
+        assert_eq!(nix_field, concat!("test_key = ", "value"));
+        assert!(expected_ssh_key_private_location.exists());
+        assert!(expected_ssh_key_public_location.exists());
+
+        //cleanup after test
+        fs::remove_file(expected_ssh_key_public_location)
+            .expect("error cleaning up test manage_secret");
+        fs::remove_file(expected_ssh_key_private_location)
+            .expect("error cleaning up test manage_secret");
     }
 
     #[test]
