@@ -1,6 +1,20 @@
 # Home Laboratory
 Configuration files and documentation for homelab.
 
+## Boot Strap WSL
+
+``` bash
+    nix-shell -p git openssh cargo
+    ssh-keygen -t ed25519 -C "<example@gmail.com>"
+    
+    # add to authrized keys on github
+    cat ~./ssh/id_ed25519.pub
+    git clone git@github.com:AundreL/home-lab.git
+
+    echo "{}" >> nix-flakes/.secrets.nix
+    cargo run nix-hosts build-dev-wsl
+```
+
 ## Update Installed System
 ``` bash
 # commands to run to update fully installed systems

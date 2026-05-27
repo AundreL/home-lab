@@ -1,9 +1,10 @@
 use clap::{CommandFactory, Parser, Subcommand};
-use std::env;
-use std::fs;
-use std::io;
 
 #[cfg(not(test))]
+use std::{env, fs, io};
+
+use std::path::Path;
+
 use std::process::Command;
 
 #[derive(Parser)]
@@ -123,6 +124,7 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
                     .expect("failed to execute command");
             }
         }
+
         Some(NixIsoSubCommands::BuildIsoDev { verbose }) => {
             #[cfg(not(test))]
             {
@@ -221,81 +223,93 @@ fn handler_nix(command: &Option<NixSubCommands>) {
             }
         }
         Some(NixSubCommands::ResyncStruct {}) => {
+            Command::new("sh")
+                .arg("-c")
+                .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" scripts/ nix-flakes/scripts")
+                .status()
+                .expect("error occured during init-struct");
+
+            Command::new("sh")
+                .arg("-c")
+                .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" dotfiles/ nix-flakes/dotfiles")
+                .status()
+                .expect("error occured during init-struct");
+        }
+
+        Some(NixSubCommands::CreateSecrets {}) => {
+            //only navigation login with command args when doing tests
+
+            #[cfg(test)]
+            {
+                return ();
+            }
+
             #[cfg(not(test))]
             {
-                Command::new("sh")
-                    .arg("-c")
-                    .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" scripts/ nix-flakes/scripts")
-                    .status()
-                    .expect("error occured during init-struct");
+                match fs::remove_file("nix-flakes/secrets.nix") {
+                    Ok(_) => {
+                        println!("remove secrets.nix");
+                    }
+                    Err(e) if e.kind() == io::ErrorKind::NotFound => {
+                        println!("no file to delete");
+                    }
+                    Err(_) => panic!("critical error during secrets.nix deletion"),
+                }
+                let home_drive = env::var("HOME").expect("unable to detect homedrive");
 
-                Command::new("sh")
-                    .arg("-c")
-                    .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" dotfiles/ nix-flakes/dotfiles")
-                    .status()
-                    .expect("error occured during init-struct");
+                let dev_box_nixos_public_key_location =
+                    format!("{}/.ssh/id_ed25519_dev_box_nixos.pub", home_drive);
+
+                let dev_box_aundre_public_key_location =
+                    format!("{}/.ssh/id_ed25519_dev_box_aundre.pub", home_drive);
+
+                let cluster_node_nixos_public_key_location =
+                    format!("{}/.ssh/id_ed25519_cluster_node_nixos.pub", home_drive);
+
+                let cluster_node_node_public_key_location =
+                    format!("{}/.ssh/id_ed25519_cluster_node_node.pub", home_drive);
+
+                let dev_box_nixos_public_key_content =
+                    fs::read_to_string(dev_box_nixos_public_key_location)
+                        .expect("error loading file");
+
+                let dev_box_aundre_public_key_content =
+                    fs::read_to_string(dev_box_aundre_public_key_location)
+                        .expect("error loading file");
+
+                let cluster_node_nixos_public_key_content =
+                    fs::read_to_string(cluster_node_nixos_public_key_location)
+                        .expect("error loading file");
+
+                let cluster_node_node_public_key_content =
+                    fs::read_to_string(cluster_node_node_public_key_location)
+                        .expect("error loading file");
+
+                let l1 = format!(
+                    "dev_box_nixos = \"{}\";",
+                    dev_box_nixos_public_key_content.trim()
+                );
+                let l2 = format!(
+                    "dev_box_aundre = \"{}\";",
+                    dev_box_aundre_public_key_content.trim()
+                );
+                let l3 = format!(
+                    "cluster_node_nixos = \"{}\";",
+                    cluster_node_nixos_public_key_content.trim()
+                );
+                let l4 = format!(
+                    "cluster_node_node = \"{}\";",
+                    cluster_node_node_public_key_content.trim()
+                );
+
+                let secrets_nix_contents =
+                    format!("{{\n\t{}\n\t{}\n\t{}\n\t{}\n}}\n", l1, l2, l3, l4);
+
+                fs::write("nix-flakes/.secrets.nix", secrets_nix_contents)
+                    .expect("had issue writing to file");
             }
         }
-        Some(NixSubCommands::CreateSecrets {}) => {
-            match fs::remove_file("nix-flakes/secrets.nix") {
-                Ok(_) => {
-                    println!("remove secrets.nix");
-                }
-                Err(e) if e.kind() == io::ErrorKind::NotFound => {
-                    println!("no file to delete");
-                }
-                Err(_) => panic!("critical error during secrets.nix deletion"),
-            }
-            let home_drive = env::var("HOME").expect("unable to detect homedrive");
 
-            let dev_box_nixos_public_key_location =
-                format!("{}/.ssh/id_ed25519_dev_box_nixos.pub", home_drive);
-
-            let dev_box_aundre_public_key_location =
-                format!("{}/.ssh/id_ed25519_dev_box_aundre.pub", home_drive);
-
-            let cluster_node_nixos_public_key_location =
-                format!("{}/.ssh/id_ed25519_cluster_node_nixos.pub", home_drive);
-
-            let cluster_node_node_public_key_location =
-                format!("{}/.ssh/id_ed25519_cluster_node_node.pub", home_drive);
-
-            let dev_box_nixos_public_key_content =
-                fs::read_to_string(dev_box_nixos_public_key_location).expect("error loading file");
-
-            let dev_box_aundre_public_key_content =
-                fs::read_to_string(dev_box_aundre_public_key_location).expect("error loading file");
-
-            let cluster_node_nixos_public_key_content =
-                fs::read_to_string(cluster_node_nixos_public_key_location)
-                    .expect("error loading file");
-
-            let cluster_node_node_public_key_content =
-                fs::read_to_string(cluster_node_node_public_key_location)
-                    .expect("error loading file");
-
-            let l1 = format!(
-                "dev_box_nixos = \"{}\";",
-                dev_box_nixos_public_key_content.trim()
-            );
-            let l2 = format!(
-                "dev_box_aundre = \"{}\";",
-                dev_box_aundre_public_key_content.trim()
-            );
-            let l3 = format!(
-                "cluster_node_nixos = \"{}\";",
-                cluster_node_nixos_public_key_content.trim()
-            );
-            let l4 = format!(
-                "cluster_node_node = \"{}\";",
-                cluster_node_node_public_key_content.trim()
-            );
-
-            let secrets_nix_contents = format!("{{\n\t{}\n\t{}\n\t{}\n\t{}\n}}\n", l1, l2, l3, l4);
-
-            fs::write("nix-flakes/.secrets.nix", secrets_nix_contents)
-                .expect("had issue writing to file");
-        }
         Some(NixSubCommands::Clean {}) => {
             #[cfg(not(test))]
             Command::new("sh")
@@ -309,6 +323,17 @@ fn handler_nix(command: &Option<NixSubCommands>) {
         }
     }
 }
+
+fn manage_secret(str_path: &str) {
+    //create path
+    let path_path = Path::new(str_path);
+
+    if !path_path.exists() {}
+    //check if the ssh key exists by checking .ssh file for user
+    //if it does not exists create ssh-key
+    //if exists do nothing
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

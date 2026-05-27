@@ -34,6 +34,25 @@
                 inherit home-manager;
             };
 
+            hl-utils = derivation {
+                name = "iso-utils";
+                system = builtins.currentSystem;
+                builder = "${pkgs-stable.bash}/bin/bash";
+                src = ../.;
+                args = [
+                    "-c"
+                    ''
+                        export PATH=$PATH:${pkgs-stable.coreutils}/bin:${pkgs-stable.cargo}/bin
+                        cargo build --release
+                        mkdir -p $out/bin
+
+                        mv target/release/home-lab $out/bin/hl-util
+
+                    ''
+
+                ];
+            };
+
         in
         {
             nixosConfigurations.iso-installer = nixpkgs-stable.lib.nixosSystem {
