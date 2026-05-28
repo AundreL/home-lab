@@ -9,6 +9,7 @@
             url = "github:AundreL/dotfiles";
             flake = false;
         };
+
     };
 
     outputs =
@@ -28,36 +29,28 @@
 
             secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
 
+            hl-util = pkgs-stable.rustPlatform.buildRustPackage {
+                pname = "hl-util";
+                version = "0.0.3";
+                src = ./.;
+
+                cargoHash = "sha256-ThS9JFVkKPKpz1/vBYmaBNcCX3NejtRwwuFmw2tI60E=";
+
+                nativeBuildInputs = [ pkgs-stable.openssh ];
+                outputs = [
+                    "out"
+                ];
+                meta = {
+                    description = "utility tool to manage home lab";
+                    homepage = "";
+                    license = "";
+                };
+            };
+
             defaultModuleArgs = {
                 inherit pkgs-unstable; # pass unstable to modules
                 inherit pkgs-stable;
                 inherit home-manager;
-            };
-
-            hl-util = derivation rec {
-                name = "hl-util";
-                system = builtins.currentSystem;
-                builder = "${pkgs-stable.bash}/bin/bash";
-                src = pkgs-stable.lib.fileset.toSource {
-                    root = ./.;
-                    fileset = pkgs-stable.lib.fileset.unions [
-                        ./Cargo.toml
-                        ./Cargo.lock
-                        ./src
-                    ];
-                };
-                args = [
-                    "-c"
-                    ''
-                        export PATH=$PATH:${pkgs-stable.coreutils}/bin:${pkgs-stable.cargo}/bin
-                        cargo build --release
-                        mkdir -p $out/bin
-
-                        mv target/release/home-lab $out/bin/hl-util
-
-                    ''
-
-                ];
             };
 
         in
@@ -66,7 +59,7 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./hosts/iso-installer/configuration.nix
+                    ./nix-flakes/hosts/iso-installer/configuration.nix
                 ];
             };
 
@@ -74,10 +67,10 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./configuration.nix
-                    ./hosts/dev-box/hardware-configuration.nix
-                    ./hosts/dev-box/configuration.nix
-                    ./users/aundre/configuration.nix
+                    ./nix-flakes/configuration.nix
+                    ./nix-flakes/hosts/dev-box/hardware-configuration.nix
+                    ./nix-flakes/hosts/dev-box/configuration.nix
+                    ./nix-flakes/users/aundre/configuration.nix
                 ];
             };
 
@@ -86,10 +79,10 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./configuration.nix
-                    ./hosts/kube-node/hardware-configuration.nix
-                    ./hosts/dev-box/configuration.nix
-                    ./users/aundre/configuration.nix
+                    ./nix-flakes/configuration.nix
+                    ./nix-flakes/hosts/kube-node/hardware-configuration.nix
+                    ./nix-flakes/hosts/dev-box/configuration.nix
+                    ./nix-flakes/users/aundre/configuration.nix
                 ];
             };
 
@@ -102,9 +95,9 @@
                 };
 
                 modules = [
-                    ./configuration.nix
-                    ./hosts/dev-wsl/configuration.nix
-                    ./users/aundre/configuration.nix
+                    ./nix-flakes/configuration.nix
+                    ./nix-flakes/hosts/dev-wsl/configuration.nix
+                    ./nix-flakes/users/aundre/configuration.nix
                 ];
 
             };
@@ -113,9 +106,9 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./configuration.nix
-                    ./hosts/kube-node/hardware-configuration.nix
-                    ./hosts/kube-node/configuration.nix
+                    ./nix-flakes/configuration.nix
+                    ./nix-flakes/hosts/kube-node/hardware-configuration.nix
+                    ./nix-flakes/hosts/kube-node/configuration.nix
                 ];
             };
 

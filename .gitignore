@@ -2,6 +2,7 @@ build-stage
 build-log-output.txt
 secrets
 dotfiles
+secrets.json
 
 # Added by cargo
 

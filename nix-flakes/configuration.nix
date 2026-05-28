@@ -67,7 +67,7 @@ let
     ];
 
     custom-packages = [
-        # hl-util
+        hl-util
     ];
 in
 {

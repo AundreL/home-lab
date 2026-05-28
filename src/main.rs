@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::{env, fs};
 
 use std::process::Command;
@@ -114,7 +114,7 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
                 let shell_command = format!(
                     "{} {} {}",
                     "nix build --impure",
-                    "path:nix-flakes/\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
+                    "\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
                     "&> build-log-output.txt"
                 );
 
@@ -142,7 +142,7 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
                 let shell_command = format!(
                     "{} {}",
                     nix_command,
-                    "path:nix-flakes/\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
+                    "\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
                 );
 
                 Command::new("sh")
@@ -164,7 +164,7 @@ fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
             #[cfg(not(test))]
             Command::new("sh")
                 .arg("-c")
-                .arg("nixos-rebuild switch --impure --flake path:nix-flakes/\"#dev-wsl\"")
+                .arg("nixos-rebuild switch --impure --flake path:.\"#dev-wsl\"")
                 .status()
                 .expect("error occured during build-dev-wsl-flake");
         }
@@ -172,7 +172,7 @@ fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
             #[cfg(not(test))]
             Command::new("sh")
                 .arg("-c")
-                .arg("nixos-rebuild switch --impure --flake path:nix-flakes/\"#dev-box\"")
+                .arg("nixos-rebuild switch --impure --flake \"#dev-box\"")
                 .status()
                 .expect("error occured during build-dev-box-flake");
         }
@@ -180,7 +180,7 @@ fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
             #[cfg(not(test))]
             Command::new("sh")
                 .arg("-c")
-                .arg("nixos-rebuild switch --impure --flake path:nix-flakes/\"#dev-box-vm\"")
+                .arg("nixos-rebuild switch --impure --flake \"#dev-box-vm\"")
                 .status()
                 .expect("error occured during build-dev-box-vm-flake");
         }
@@ -196,7 +196,7 @@ fn handler_nix_shells(command: &Option<NixShellsSubCommands>) {
             #[cfg(not(test))]
             Command::new("sh")
                 .arg("-c")
-                .arg("nix develop nix-flakes/\".#tuari\"")
+                .arg("nix develop \".#tuari\"")
                 .status()
                 .expect("error occured during build-dev-wsl-flake");
         }
@@ -248,11 +248,11 @@ fn handler_nix(command: &Option<NixSubCommands>) {
 
             #[cfg(not(test))]
             {
-                let _ = manage_secret("github");
-                let _ = manage_secret("dev_box_nixos");
-                let _ = manage_secret("dev_box_aundre");
-                let _ = manage_secret("cluster_node_nixos");
-                let _ = manage_secret("cluster_node_node");
+                let _ = manage_secret("github", None);
+                let _ = manage_secret("dev_box_nixos", None);
+                let _ = manage_secret("dev_box_aundre", None);
+                let _ = manage_secret("cluster_node_nixos", None);
+                let _ = manage_secret("cluster_node_node", None);
             }
         }
 
@@ -270,14 +270,23 @@ fn handler_nix(command: &Option<NixSubCommands>) {
     }
 }
 
-fn manage_secret(key_name: &str) -> Result<(String, String), Box<dyn Error>> {
+fn manage_secret(
+    key_name: &str,
+    custom_path: Option<PathBuf>,
+) -> Result<(String, String), Box<dyn Error>> {
     //create path
-
-    let mut ssh_private_key_location = env::var_os("HOME")
-        .map(PathBuf::from)
-        .expect("error getting user home");
+    let mut ssh_private_key_location = custom_path.clone().unwrap_or_else(|| {
+        env::var_os("HOME")
+            .map(PathBuf::from)
+            .expect("error getting user home")
+    });
 
     ssh_private_key_location.push(".ssh");
+
+    if let Some(_) = &custom_path {
+        let _ = fs::create_dir_all(&ssh_private_key_location);
+    }
+
     ssh_private_key_location.push(format!("id_ed25519_{}", &key_name));
 
     let mut ssh_public_key_location = ssh_private_key_location.clone();
@@ -313,12 +322,13 @@ fn manage_secret(key_name: &str) -> Result<(String, String), Box<dyn Error>> {
         }
     }
 
-    let path_secrets = Path::new("./nix-flakes/secrets.json");
+    let mut path_secrets = custom_path.unwrap_or_else(|| PathBuf::new());
+    path_secrets.push("secrets.json");
 
     let public_key_value = fs::read_to_string(ssh_public_key_location)?;
 
     let mut ssh_keys: HashMap<String, String> = if path_secrets.exists() {
-        let file_secrets = File::open(path_secrets)?;
+        let file_secrets = File::open(&path_secrets)?;
         let reader = BufReader::new(file_secrets);
         serde_json::from_reader(reader)?
     } else {
@@ -345,6 +355,7 @@ mod tests {
     use super::*;
     use clap::Parser;
     use clap::error::ErrorKind;
+    use tempfile::tempdir;
 
     const PROGRAM_NAME: &str = "hl-util";
 
@@ -541,30 +552,31 @@ mod tests {
         //setup the test
         let test_key = "test_key";
 
-        let mut expected_ssh_key_private_location = env::var_os("HOME")
-            .map(PathBuf::from)
-            .expect("error getting user home");
+        let temp_stage = tempdir().expect("error occured creating temp directory");
+
+        let mut expected_ssh_key_private_location = temp_stage.path().to_path_buf();
 
         expected_ssh_key_private_location.push(".ssh");
-
         let mut expected_ssh_key_public_location = expected_ssh_key_private_location.clone();
 
         expected_ssh_key_private_location.push("id_ed25519_test_key");
         expected_ssh_key_public_location.push("id_ed25519_test_key.pub");
 
-        println!("{:?}", expected_ssh_key_private_location);
+        println!("{:?}", expected_ssh_key_public_location);
 
         let (ssh_key_name, public_key_value) =
-            manage_secret(test_key).expect("error during secret management");
+            manage_secret(test_key, Some(temp_stage.path().to_path_buf()))
+                .expect("error during secret management");
 
-        let path_secrets = Path::new("./nix-flakes/secrets.json");
+        println!("got past manage_secrets");
+        let mut path_secrets = temp_stage.path().to_path_buf();
+        path_secrets.push("secrets.json");
 
-        // assert_eq!(nix_field, concat!("test_key = ", "value"));
         assert!(expected_ssh_key_private_location.exists());
         assert!(expected_ssh_key_public_location.exists());
         assert!(path_secrets.exists());
 
-        let file_secrets = File::open(path_secrets).expect("failed to open secrets.json");
+        let file_secrets = File::open(&path_secrets).expect("failed to open secrets.json");
         let reader = BufReader::new(file_secrets);
 
         let parsed_json: HashMap<String, String> =
@@ -575,16 +587,17 @@ mod tests {
             parsed_json.contains_key(test_key),
             "missing test_key entry in json file"
         );
+
         assert_eq!(
             parsed_json.get(test_key).unwrap().to_string(),
-            public_key_value
+            public_key_value.to_string().trim()
         );
         //cleanup after test
         fs::remove_file(expected_ssh_key_public_location)
             .expect("error cleaning up test manage_secret");
         fs::remove_file(expected_ssh_key_private_location)
             .expect("error cleaning up test manage_secret");
-        fs::remove_file(path_secrets).expect("error cleaning up secret");
+        fs::remove_file(&path_secrets).expect("error cleaning up secret");
     }
 
     #[test]
