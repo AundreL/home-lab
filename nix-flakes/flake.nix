@@ -26,7 +26,7 @@
             pkgs-stable = nixpkgs-stable.legacyPackages.${system};
             pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
 
-            secrets = ./.secrets.nix;
+            secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
 
             defaultModuleArgs = {
                 inherit pkgs-unstable; # pass unstable to modules
@@ -34,11 +34,18 @@
                 inherit home-manager;
             };
 
-            hl-utils = derivation {
-                name = "iso-utils";
+            hl-util = derivation rec {
+                name = "hl-util";
                 system = builtins.currentSystem;
                 builder = "${pkgs-stable.bash}/bin/bash";
-                src = ../.;
+                src = pkgs-stable.lib.fileset.toSource {
+                    root = ./.;
+                    fileset = pkgs-stable.lib.fileset.unions [
+                        ./Cargo.toml
+                        ./Cargo.lock
+                        ./src
+                    ];
+                };
                 args = [
                     "-c"
                     ''
@@ -90,6 +97,8 @@
                 system = system;
                 specialArgs = defaultModuleArgs // {
                     inherit aundre-dotfiles;
+                    secrets = secrets;
+                    hl-util = hl-util;
                 };
 
                 modules = [

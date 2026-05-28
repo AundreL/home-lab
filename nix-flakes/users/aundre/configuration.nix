@@ -9,11 +9,9 @@
     pkgs-unstable,
     home-manager,
     aundre-dotfiles,
+    secrets,
     ...
 }:
-let
-    secrets = import ../../.secrets.nix;
-in
 {
     imports = [
         (import "${home-manager}/nixos")

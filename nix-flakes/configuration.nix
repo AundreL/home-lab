@@ -8,6 +8,7 @@
     pkgs-stable,
     pkgs-unstable,
     home-manager,
+    hl-util,
     ...
 }:
 let
@@ -64,6 +65,10 @@ let
         pkgs-unstable.tmux
         pkgs-unstable.neovim
     ];
+
+    custom-packages = [
+        # hl-util
+    ];
 in
 {
     nix.settings.experimental-features = [
@@ -73,7 +78,7 @@ in
 
     nixpkgs.config.allowUnfree = true;
 
-    environment.systemPackages = stable-packages ++ unstable-packages;
+    environment.systemPackages = stable-packages ++ unstable-packages ++ custom-packages;
 
     services.openssh.enable = true;
 

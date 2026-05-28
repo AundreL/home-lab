@@ -1,10 +1,10 @@
 use clap::{CommandFactory, Parser, Subcommand};
-
-#[cfg(not(test))]
-use std::{fs, io};
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::BufReader;
 
 use std::error::Error;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::{env, fs};
 
 use std::process::Command;
@@ -248,67 +248,11 @@ fn handler_nix(command: &Option<NixSubCommands>) {
 
             #[cfg(not(test))]
             {
-                match fs::remove_file("nix-flakes/secrets.nix") {
-                    Ok(_) => {
-                        println!("remove secrets.nix");
-                    }
-                    Err(e) if e.kind() == io::ErrorKind::NotFound => {
-                        println!("no file to delete");
-                    }
-                    Err(_) => panic!("critical error during secrets.nix deletion"),
-                }
-                let home_drive = env::var("HOME").expect("unable to detect homedrive");
-
-                let dev_box_nixos_public_key_location =
-                    format!("{}/.ssh/id_ed25519_dev_box_nixos.pub", home_drive);
-
-                let dev_box_aundre_public_key_location =
-                    format!("{}/.ssh/id_ed25519_dev_box_aundre.pub", home_drive);
-
-                let cluster_node_nixos_public_key_location =
-                    format!("{}/.ssh/id_ed25519_cluster_node_nixos.pub", home_drive);
-
-                let cluster_node_node_public_key_location =
-                    format!("{}/.ssh/id_ed25519_cluster_node_node.pub", home_drive);
-
-                let dev_box_nixos_public_key_content =
-                    fs::read_to_string(dev_box_nixos_public_key_location)
-                        .expect("error loading file");
-
-                let dev_box_aundre_public_key_content =
-                    fs::read_to_string(dev_box_aundre_public_key_location)
-                        .expect("error loading file");
-
-                let cluster_node_nixos_public_key_content =
-                    fs::read_to_string(cluster_node_nixos_public_key_location)
-                        .expect("error loading file");
-
-                let cluster_node_node_public_key_content =
-                    fs::read_to_string(cluster_node_node_public_key_location)
-                        .expect("error loading file");
-
-                let l1 = format!(
-                    "dev_box_nixos = \"{}\";",
-                    dev_box_nixos_public_key_content.trim()
-                );
-                let l2 = format!(
-                    "dev_box_aundre = \"{}\";",
-                    dev_box_aundre_public_key_content.trim()
-                );
-                let l3 = format!(
-                    "cluster_node_nixos = \"{}\";",
-                    cluster_node_nixos_public_key_content.trim()
-                );
-                let l4 = format!(
-                    "cluster_node_node = \"{}\";",
-                    cluster_node_node_public_key_content.trim()
-                );
-
-                let secrets_nix_contents =
-                    format!("{{\n\t{}\n\t{}\n\t{}\n\t{}\n}}\n", l1, l2, l3, l4);
-
-                fs::write("nix-flakes/.secrets.nix", secrets_nix_contents)
-                    .expect("had issue writing to file");
+                let _ = manage_secret("github");
+                let _ = manage_secret("dev_box_nixos");
+                let _ = manage_secret("dev_box_aundre");
+                let _ = manage_secret("cluster_node_nixos");
+                let _ = manage_secret("cluster_node_node");
             }
         }
 
@@ -326,23 +270,26 @@ fn handler_nix(command: &Option<NixSubCommands>) {
     }
 }
 
-fn manage_secret(key_name: &str) -> Result<String, Box<dyn Error>> {
+fn manage_secret(key_name: &str) -> Result<(String, String), Box<dyn Error>> {
     //create path
 
-    let mut ssh_key_location = env::var_os("HOME")
+    let mut ssh_private_key_location = env::var_os("HOME")
         .map(PathBuf::from)
         .expect("error getting user home");
 
-    ssh_key_location.push(".ssh");
-    ssh_key_location.push(format!("id_ed25519_{}", &key_name));
+    ssh_private_key_location.push(".ssh");
+    ssh_private_key_location.push(format!("id_ed25519_{}", &key_name));
 
-    let sterile_string_for_args: String = ssh_key_location
+    let mut ssh_public_key_location = ssh_private_key_location.clone();
+    ssh_public_key_location.set_extension("pub");
+
+    let sterile_string_for_args: String = ssh_private_key_location
         .clone()
         .into_os_string()
         .into_string()
         .expect("error turning path to string");
 
-    if !ssh_key_location.exists() {
+    if !ssh_private_key_location.exists() {
         let mut generate_ssh_key = Command::new("ssh-keygen");
         generate_ssh_key.args([
             "-q",
@@ -366,10 +313,31 @@ fn manage_secret(key_name: &str) -> Result<String, Box<dyn Error>> {
         }
     }
 
-    return Ok(String::new());
-    //check if the ssh key exists by checking .ssh file for user
-    //if it does not exists create ssh-key
-    //if exists do nothing
+    let path_secrets = Path::new("./nix-flakes/secrets.json");
+
+    let public_key_value = fs::read_to_string(ssh_public_key_location)?;
+
+    let mut ssh_keys: HashMap<String, String> = if path_secrets.exists() {
+        let file_secrets = File::open(path_secrets)?;
+        let reader = BufReader::new(file_secrets);
+        serde_json::from_reader(reader)?
+    } else {
+        HashMap::new()
+    };
+
+    ssh_keys.insert(
+        key_name.to_string(),
+        public_key_value.clone().to_string().trim().to_string(),
+    );
+
+    if let Some(parent) = path_secrets.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    let output_file = File::create(path_secrets)?;
+    let _ = serde_json::to_writer_pretty(output_file, &ssh_keys);
+
+    return Ok((key_name.to_string(), public_key_value));
 }
 
 #[cfg(test)]
@@ -586,18 +554,37 @@ mod tests {
 
         println!("{:?}", expected_ssh_key_private_location);
 
-        let nix_field = manage_secret(test_key).expect("error during secret management");
+        let (ssh_key_name, public_key_value) =
+            manage_secret(test_key).expect("error during secret management");
 
-        todo!("make method read string");
-        assert_eq!(nix_field, concat!("test_key = ", "value"));
+        let path_secrets = Path::new("./nix-flakes/secrets.json");
+
+        // assert_eq!(nix_field, concat!("test_key = ", "value"));
         assert!(expected_ssh_key_private_location.exists());
         assert!(expected_ssh_key_public_location.exists());
+        assert!(path_secrets.exists());
 
+        let file_secrets = File::open(path_secrets).expect("failed to open secrets.json");
+        let reader = BufReader::new(file_secrets);
+
+        let parsed_json: HashMap<String, String> =
+            serde_json::from_reader(reader).expect("failed to parse secrets.json into hashmap");
+
+        assert_eq!(test_key, ssh_key_name);
+        assert!(
+            parsed_json.contains_key(test_key),
+            "missing test_key entry in json file"
+        );
+        assert_eq!(
+            parsed_json.get(test_key).unwrap().to_string(),
+            public_key_value
+        );
         //cleanup after test
         fs::remove_file(expected_ssh_key_public_location)
             .expect("error cleaning up test manage_secret");
         fs::remove_file(expected_ssh_key_private_location)
             .expect("error cleaning up test manage_secret");
+        fs::remove_file(path_secrets).expect("error cleaning up secret");
     }
 
     #[test]
