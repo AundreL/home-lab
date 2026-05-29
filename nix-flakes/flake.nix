@@ -57,9 +57,11 @@
         {
             nixosConfigurations.iso-installer = nixpkgs-stable.lib.nixosSystem {
                 system = system;
-                specialArgs = defaultModuleArgs;
+                specialArgs = defaultModuleArgs // {
+                    secrets = secrets;
+                };
                 modules = [
-                    ./nix-flakes/hosts/iso-installer/configuration.nix
+                    ./hosts/iso-installer/configuration.nix
                 ];
             };
 
@@ -67,10 +69,10 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./nix-flakes/configuration.nix
-                    ./nix-flakes/hosts/dev-box/hardware-configuration.nix
-                    ./nix-flakes/hosts/dev-box/configuration.nix
-                    ./nix-flakes/users/aundre/configuration.nix
+                    ./configuration.nix
+                    ./hosts/dev-box/hardware-configuration.nix
+                    ./hosts/dev-box/configuration.nix
+                    ./users/aundre/configuration.nix
                 ];
             };
 
@@ -79,10 +81,10 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./nix-flakes/configuration.nix
-                    ./nix-flakes/hosts/kube-node/hardware-configuration.nix
-                    ./nix-flakes/hosts/dev-box/configuration.nix
-                    ./nix-flakes/users/aundre/configuration.nix
+                    ./configuration.nix
+                    ./hosts/kube-node/hardware-configuration.nix
+                    ./hosts/dev-box/configuration.nix
+                    ./users/aundre/configuration.nix
                 ];
             };
 
@@ -95,9 +97,9 @@
                 };
 
                 modules = [
-                    ./nix-flakes/configuration.nix
-                    ./nix-flakes/hosts/dev-wsl/configuration.nix
-                    ./nix-flakes/users/aundre/configuration.nix
+                    ./configuration.nix
+                    ./hosts/dev-wsl/configuration.nix
+                    ./users/aundre/configuration.nix
                 ];
 
             };
@@ -106,9 +108,9 @@
                 system = system;
                 specialArgs = defaultModuleArgs;
                 modules = [
-                    ./nix-flakes/configuration.nix
-                    ./nix-flakes/hosts/kube-node/hardware-configuration.nix
-                    ./nix-flakes/hosts/kube-node/configuration.nix
+                    ./configuration.nix
+                    ./hosts/kube-node/hardware-configuration.nix
+                    ./hosts/kube-node/configuration.nix
                 ];
             };
 

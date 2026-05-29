@@ -1,20 +1,23 @@
 {
     config,
-    pkgs,
     lib,
+    pkgs-stable,
+    pkgs-unstable,
+    home-manager,
+    secrets,
     ...
 }:
 let
     iso-utils = derivation {
         name = "iso-utils";
         system = builtins.currentSystem;
-        builder = "${pkgs.bash}/bin/bash";
+        builder = "${pkgs-stable.bash}/bin/bash";
         flake_dir = ../..;
         scripts_dir = ../../scripts;
         args = [
             "-c"
             ''
-                export PATH=$PATH:${pkgs.coreutils}/bin
+                export PATH=$PATH:${pkgs-stable.coreutils}/bin
 
                 mkdir -p $out/etc/iso-utils
                 mkdir -p $out/bin
@@ -37,13 +40,6 @@ let
             ''
         ];
     };
-
-    home-manager = builtins.fetchTarball {
-        url = "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
-        sha256 = "1zvr96smn9xs56020424pfz91cxwlm8sv17rrav8qdhq670jm7qs";
-    };
-
-    secrets = import ../../.secrets.nix;
 in
 {
     imports = [
@@ -70,7 +66,7 @@ in
         isNormalUser = true;
         description = "nixos";
         extraGroups = [ "wheel" ];
-        shell = pkgs.fish;
+        shell = pkgs-stable.fish;
 
         openssh.authorizedKeys.keys = [
             secrets.dev_box_nixos
@@ -88,7 +84,7 @@ in
         };
     };
 
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = with pkgs-stable; [
         git
         gnumake
         python3

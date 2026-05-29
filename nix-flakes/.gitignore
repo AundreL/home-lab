@@ -1,4 +1,10 @@
 result
+target
 dotfiles
 scripts
+
 secrets.json
+
+src
+Cargo.toml
+Cargo.lock

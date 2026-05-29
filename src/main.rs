@@ -73,12 +73,14 @@ enum NixShellsSubCommands {
 enum NixSubCommands {
     #[command(about="create/initialize secrets for home lab", long_about = None)]
     CreateSecrets {},
-    #[command(about="initialize folder structure for building home lab", long_about = None)]
-    InitStruct {},
     #[command(about="sync development files to build structure for building home lab", long_about = None)]
     ResyncStruct {},
     #[command(about="clear all build objects to allow for fresh builds", long_about = None)]
     Clean {},
+}
+
+struct DebugArgs {
+    dry_run: bool,
 }
 
 fn main() {
@@ -109,48 +111,19 @@ fn hl_util(cli: Cli) {
 fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
     match command {
         Some(NixIsoSubCommands::BuildIsoProd {}) => {
-            #[cfg(not(test))]
-            {
-                let shell_command = format!(
-                    "{} {} {}",
-                    "nix build --impure",
-                    "\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
-                    "&> build-log-output.txt"
-                );
+            #[cfg(test)]
+            handler_nix_iso_build_iso_prod(DebugArgs { dry_run: true });
 
-                println!("{}", shell_command);
-                Command::new("sh")
-                    .arg("-c")
-                    .arg(shell_command)
-                    .status()
-                    .expect("failed to execute command");
-            }
+            #[cfg(not(test))]
+            handler_nix_iso_build_iso_prod(DebugArgs { dry_run: false });
         }
 
         Some(NixIsoSubCommands::BuildIsoDev { verbose }) => {
+            #[cfg(test)]
+            handler_nix_iso_build_iso_dev(*verbose, DebugArgs { dry_run: true });
+
             #[cfg(not(test))]
-            {
-                #![allow(unused)]
-                let mut nix_command = "";
-
-                if *verbose == true {
-                    nix_command = "nix build --verbose --impure";
-                } else {
-                    nix_command = "nix build --impure";
-                }
-
-                let shell_command = format!(
-                    "{} {}",
-                    nix_command,
-                    "\".#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
-                );
-
-                Command::new("sh")
-                    .arg("-c")
-                    .arg(shell_command)
-                    .status()
-                    .expect("failed to execute command");
-            }
+            handler_nix_iso_build_iso_dev(*verbose, DebugArgs { dry_run: false });
         }
         _ => {
             panic!("handler_nix_iso: critical error should never reach");
@@ -161,28 +134,34 @@ fn handler_nix_iso(command: &Option<NixIsoSubCommands>) {
 fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
     match command {
         Some(NixHostsSubCommands::BuildDevWsl {}) => {
+            #[cfg(test)]
+            handler_nix_host_build_dev_wsl(DebugArgs { dry_run: true });
+
             #[cfg(not(test))]
-            Command::new("sh")
-                .arg("-c")
-                .arg("nixos-rebuild switch --impure --flake path:.\"#dev-wsl\"")
-                .status()
-                .expect("error occured during build-dev-wsl-flake");
+            {
+                handler_nix_resync_struct(DebugArgs { dry_run: false });
+                handler_nix_host_build_dev_wsl(DebugArgs { dry_run: false });
+            }
         }
         Some(NixHostsSubCommands::BuildDevBox {}) => {
+            #[cfg(test)]
+            handler_nix_host_build_dev_box(DebugArgs { dry_run: true });
+
             #[cfg(not(test))]
-            Command::new("sh")
-                .arg("-c")
-                .arg("nixos-rebuild switch --impure --flake \"#dev-box\"")
-                .status()
-                .expect("error occured during build-dev-box-flake");
+            {
+                handler_nix_resync_struct(DebugArgs { dry_run: false });
+                handler_nix_host_build_dev_box(DebugArgs { dry_run: false });
+            }
         }
         Some(NixHostsSubCommands::BuildDevBoxVm {}) => {
+            #[cfg(test)]
+            handler_nix_host_build_dev_box_vm(DebugArgs { dry_run: true });
+
             #[cfg(not(test))]
-            Command::new("sh")
-                .arg("-c")
-                .arg("nixos-rebuild switch --impure --flake \"#dev-box-vm\"")
-                .status()
-                .expect("error occured during build-dev-box-vm-flake");
+            {
+                handler_nix_resync_struct(DebugArgs { dry_run: false });
+                handler_nix_host_build_dev_box_vm(DebugArgs { dry_run: false });
+            }
         }
         _ => {
             panic!("handler_nix_hosts: critical error should never reach");
@@ -193,12 +172,11 @@ fn handler_nix_hosts(command: &Option<NixHostsSubCommands>) {
 fn handler_nix_shells(command: &Option<NixShellsSubCommands>) {
     match command {
         Some(NixShellsSubCommands::StartTauri {}) => {
+            #[cfg(test)]
+            handler_nix_shell_tauri(DebugArgs { dry_run: true });
+
             #[cfg(not(test))]
-            Command::new("sh")
-                .arg("-c")
-                .arg("nix develop \".#tuari\"")
-                .status()
-                .expect("error occured during build-dev-wsl-flake");
+            handler_nix_shell_tauri(DebugArgs { dry_run: false });
         }
         _ => {
             panic!("handler_nix_shells: critical error should never reach");
@@ -208,66 +186,162 @@ fn handler_nix_shells(command: &Option<NixShellsSubCommands>) {
 
 fn handler_nix(command: &Option<NixSubCommands>) {
     match command {
-        Some(NixSubCommands::InitStruct {}) => {
-            #[cfg(not(test))]
-            {
-                Command::new("sh")
-                    .arg("-c")
-                    .arg("cp -r scripts/ nix-flakes")
-                    .status()
-                    .expect("error occured during init-struct");
-
-                Command::new("sh")
-                    .arg("-c")
-                    .arg("cp -r dotfiles/ nix-flakes")
-                    .status()
-                    .expect("error occured during init-struct");
-            }
-        }
         Some(NixSubCommands::ResyncStruct {}) => {
-            Command::new("sh")
-                .arg("-c")
-                .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" scripts/ nix-flakes/scripts")
-                .status()
-                .expect("error occured during init-struct");
+            #[cfg(test)]
+            handler_nix_resync_struct(DebugArgs { dry_run: true });
 
-            Command::new("sh")
-                .arg("-c")
-                .arg("rsync -avh --delete --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" dotfiles/ nix-flakes/dotfiles")
-                .status()
-                .expect("error occured during init-struct");
+            #[cfg(not(test))]
+            handler_nix_resync_struct(DebugArgs { dry_run: false });
         }
 
         Some(NixSubCommands::CreateSecrets {}) => {
-            //only navigation login with command args when doing tests
-
+            //dry run during tests
             #[cfg(test)]
-            {
-                return ();
-            }
+            handler_create_secrets(DebugArgs { dry_run: true });
 
             #[cfg(not(test))]
-            {
-                let _ = manage_secret("github", None);
-                let _ = manage_secret("dev_box_nixos", None);
-                let _ = manage_secret("dev_box_aundre", None);
-                let _ = manage_secret("cluster_node_nixos", None);
-                let _ = manage_secret("cluster_node_node", None);
-            }
+            handler_create_secrets(DebugArgs { dry_run: false });
         }
 
         Some(NixSubCommands::Clean {}) => {
+            #[cfg(test)]
+            handler_nix_clean(DebugArgs { dry_run: true });
+
             #[cfg(not(test))]
-            Command::new("sh")
-                .arg("-c")
-                .arg("nix-collect-garbage -d")
-                .status()
-                .expect("error occured during init-struct");
+            handler_nix_clean(DebugArgs { dry_run: false });
         }
         _ => {
             panic!("handler_nix_iso: critical error should never reach");
         }
     }
+}
+
+fn handler_nix_iso_build_iso_prod(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    let shell_command = format!(
+        "{} {} {}",
+        "nix build --impure",
+        "path:nix-flakes\"#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
+        "&> build-log-output.txt"
+    );
+
+    println!("{}", shell_command);
+    Command::new("sh")
+        .arg("-c")
+        .arg(shell_command)
+        .status()
+        .expect("failed to execute command");
+}
+
+fn handler_nix_iso_build_iso_dev(verbose: bool, debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    let nix_command = if verbose {
+        "nix build --verbose --impure"
+    } else {
+        "nix build --impure"
+    };
+
+    let shell_command = format!(
+        "{} {}",
+        nix_command,
+        "path:nix-flakes\"#nixosConfigurations.iso-installer.config.system.build.isoImage\"",
+    );
+
+    println!("{}", shell_command);
+    Command::new("sh")
+        .arg("-c")
+        .arg(shell_command)
+        .status()
+        .expect("failed to execute command");
+}
+
+fn handler_nix_host_build_dev_wsl(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-wsl\"")
+        .status()
+        .expect("error occured during build-dev-wsl-flake");
+}
+
+fn handler_nix_host_build_dev_box(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-box\"")
+        .status()
+        .expect("error occured during build-dev-box-flake");
+}
+
+fn handler_nix_host_build_dev_box_vm(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-box-vm\"")
+        .status()
+        .expect("error occured during build-dev-box-vm-flake");
+}
+
+fn handler_nix_shell_tauri(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("nix develop \".#tuari\"")
+        .status()
+        .expect("error occured during build-dev-wsl-flake");
+}
+
+fn handler_nix_resync_struct(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+    Command::new("sh")
+                    .arg("-c")
+                    .arg("rsync -avh --delete --mkpath --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" scripts/ nix-flakes/scripts")
+                    .status()
+                    .expect("error occured during init-struct");
+
+    Command::new("sh")
+                    .arg("-c")
+                    .arg("rsync -avh --delete --mkpath --filter=\":- .gitignore\" --exclude=\".git/\" --exclude=\".gitignore\" src/ nix-flakes/src")
+                    .status()
+                    .expect("error occured during init-struct");
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("rsync -avz --delete --mkpath Cargo.toml Cargo.lock secrets.json nix-flakes")
+        .status()
+        .expect("error occured during init-struct");
+}
+
+fn handler_create_secrets(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    let _ = manage_secret("github", None);
+    let _ = manage_secret("dev_box_nixos", None);
+    let _ = manage_secret("dev_box_aundre", None);
+    let _ = manage_secret("cluster_node_nixos", None);
+    let _ = manage_secret("cluster_node_node", None);
 }
 
 fn manage_secret(
@@ -348,6 +422,18 @@ fn manage_secret(
     let _ = serde_json::to_writer_pretty(output_file, &ssh_keys);
 
     return Ok((key_name.to_string(), public_key_value));
+}
+
+fn handler_nix_clean(debug: DebugArgs) {
+    if debug.dry_run {
+        return ();
+    }
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("nix-collect-garbage -d")
+        .status()
+        .expect("error occured during init-struct");
 }
 
 #[cfg(test)]
@@ -521,14 +607,6 @@ mod tests {
                 );
             }
         }
-    }
-
-    #[test]
-    fn nix_init_struct() {
-        let args = vec![PROGRAM_NAME, "nix", "init-struct"];
-        let cli = Cli::try_parse_from(args).unwrap();
-
-        hl_util(cli);
     }
 
     #[test]
