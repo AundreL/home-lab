@@ -3,11 +3,11 @@
     "aundre-dotfiles": {
       "flake": false,
       "locked": {
-        "lastModified": 1780178246,
-        "narHash": "sha256-1GogSIZNZF90gZMc0eDeuDKJzJ/wDFcol5rCWi5BIZQ=",
+        "lastModified": 1780235128,
+        "narHash": "sha256-SKdgtshIfjkpr7cl4wgnapfbr5LjEqVdVIFYlh67cSk=",
         "owner": "AundreL",
         "repo": "dotfiles",
-        "rev": "72f4d32fb043bb566f2bd968da9638fa47d9959d",
+        "rev": "273064722f8ab6bb8e4c841e6376681d02ff87af",
         "type": "github"
       },
       "original": {
