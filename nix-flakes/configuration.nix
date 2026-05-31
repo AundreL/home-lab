@@ -26,7 +26,6 @@ let
 
         # modern cli tools
         fastfetch
-        tree
         fd
         ripgrep
         fzf
