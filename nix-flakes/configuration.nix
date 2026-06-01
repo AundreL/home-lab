@@ -41,6 +41,8 @@ let
 
         #language interpretors, formatters and lsp
 
+        taplo # toml formatter
+
         #bash
         shfmt # bash formatter
 
@@ -49,7 +51,7 @@ let
         nixfmt # nix formatter
 
         #python
-        basedpyright # bash lsp
+        basedpyright # python lsp
         ruff # python formatter
 
         #rust
