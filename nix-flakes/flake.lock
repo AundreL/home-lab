@@ -3,11 +3,11 @@
     "aundre-dotfiles": {
       "flake": false,
       "locked": {
-        "lastModified": 1780321900,
-        "narHash": "sha256-WaXYEyZ7K4Sk6zkxURQHtNyJqE6qKWaHJqTilEZC6yk=",
+        "lastModified": 1780579288,
+        "narHash": "sha256-FRlSLdYIekWqDKLgOZcxglX8hmQHi6A6cc2tHNJL60k=",
         "owner": "AundreL",
         "repo": "dotfiles",
-        "rev": "aeb24800900dd9f83f8646a9ff4a205bdb23e3c3",
+        "rev": "757ed7ac93610cc6ad1eee89a49da329e5728793",
         "type": "github"
       },
       "original": {
@@ -69,11 +69,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1779560665,
-        "narHash": "sha256-tpyBcxPpcQb8ukyNF7DoCwfSY3VPsxHoYwj00Cayv5o=",
+        "lastModified": 1780243769,
+        "narHash": "sha256-x5UQuRsH3MqI0U9afaXSNqzTPSeZlRLvFAav2Ux1pNw=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+        "rev": "331800de5053fcebacf6813adb5db9c9dca22a0c",
         "type": "github"
       },
       "original": {
