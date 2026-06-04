@@ -22,8 +22,6 @@ let
       xclip
       starship
 
-      zsh
-
       # modern cli tools
       fastfetch
       fd
