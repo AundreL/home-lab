@@ -41,6 +41,12 @@
 # release-0.0.10:
 - (done) add hl-util to nix enviroment with derivation
 - (done) refactor nix and nixos configuration
+- (defer)add nix-anywhere
+- (defer)create test script for rust utility(hl-util)
+- (defer)add result and error handling to hl-util
+
+
+# release-0.0.11:
 - add nix-anywhere
 - create test script for rust utility(hl-util)
 - add result and error handling to hl-util
