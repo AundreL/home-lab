@@ -32,10 +32,10 @@
          #homelab utility tool
          hl-util = pkgs-stable.rustPlatform.buildRustPackage {
             pname = "hl-util";
-            version = "0.0.3";
+            version = "0.2.0";
             src = ./.;
 
-            cargoHash = "sha256-ThS9JFVkKPKpz1/vBYmaBNcCX3NejtRwwuFmw2tI60E=";
+            cargoHash = "sha256-gbktdmq1323cZkRklGDc7NvPQptrt1IEf1LBH8UA/Dg=";
 
             nativeBuildInputs = [ pkgs-stable.openssh ];
             outputs = [

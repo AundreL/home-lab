@@ -23,6 +23,19 @@
       "nix-command"
       "flakes"
    ];
+
+   i18n.supportedLocales = [
+      "en_US.UTF-8/UTF-8"
+   ];
+
+   i18n.defaultLocale = "en_US.UTF-8";
+
+   environment.sessionVariables = {
+      LANG = "en_US.UTF-8";
+      LC_ALL = "en_US.UTF-8";
+      LC_CTYPE = "en_US.UTF-8";
+   };
+
    nixpkgs.config.allowUnfree = true;
 
    environment.systemPackages = with pkgs; [

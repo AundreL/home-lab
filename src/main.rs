@@ -20,6 +20,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    Version {
+        #[command(subcommand)]
+        subcommand: Option<VersionSubCommands>,
+    },
     NixIso {
         #[command(subcommand)]
         subcommand: Option<NixIsoSubCommands>,
@@ -37,6 +41,9 @@ enum Commands {
         subcommand: Option<NixSubCommands>,
     },
 }
+
+#[derive(Subcommand)]
+enum VersionSubCommands {}
 
 #[derive(Subcommand)]
 #[command(arg_required_else_help = true)]
@@ -90,6 +97,13 @@ fn main() {
 
 fn hl_util(cli: Cli) {
     match &cli.command {
+        Some(Commands::Version { .. }) => {
+            println!(
+                "{} version {}",
+                env!("CARGO_PKG_NAME"),
+                env!("CARGO_PKG_VERSION")
+            );
+        }
         Some(Commands::NixIso { subcommand }) => {
             handler_nix_iso(subcommand);
         }
@@ -379,7 +393,7 @@ fn manage_secret(
             "-t",
             "ed25519",
             "-N",
-            "''",
+            "",
             "-f",
             &sterile_string_for_args,
         ]);
