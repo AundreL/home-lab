@@ -294,7 +294,7 @@ fn handler_nix_host_build_dev_box(debug: DebugArgs) {
 
     Command::new("sh")
         .arg("-c")
-        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-box\"")
+        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-system\"")
         .status()
         .expect("error occured during build-dev-box-flake");
 }
@@ -306,7 +306,7 @@ fn handler_nix_host_build_dev_box_vm(debug: DebugArgs) {
 
     Command::new("sh")
         .arg("-c")
-        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-box-vm\"")
+        .arg("nixos-rebuild switch --impure --flake path:nix-flakes\"#dev-system-vm\"")
         .status()
         .expect("error occured during build-dev-box-vm-flake");
 }

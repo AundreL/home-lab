@@ -45,12 +45,13 @@ let
       git
       gnumake
       python3
-      tree
+      eza
       wget
       curl
       neovim
-      iso-utils
       htop
+
+      iso-utils
    ];
 
    custom-packages = [
@@ -60,8 +61,19 @@ in
    imports = [
       (import "${home-manager}/nixos")
       <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
+
+      # Provide an initial copy of the NixOS channel so that the user
+      # doesn't need to run "nix-channel --update" first.
       <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
    ];
+   isoImage.makeEfiBootable = true;
+   isoImage.makeUsbBootable = false;
+
+   # use the latest Linux kernel
+   boot.kernelPackages = pkgs.linuxPackages_latest;
+   boot.supportedFilesystems.zfs = false;
+   boot.supportedFilesystems.bcachefs = true;
+   boot.loader.efi.canTouchEfiVariables = false;
 
    i18n.supportedLocales = [
       "en_US.UTF-8/UTF-8"

@@ -69,6 +69,6 @@ swapon /mnt/swapfile
 echo -e "\e[1;32mstep 5: starting NixOS installation...\e[0m"
 cd /mnt
 # run the installation using your target flake
-nixos-install --impure --flake /etc/iso-utils/flakes#kube-node
+nixos-install --impure --flake /etc/iso-utils/flakes#lab-node
 
 echo -e "\e[1;34mDisk preparation and installation process complete!\e[0m"

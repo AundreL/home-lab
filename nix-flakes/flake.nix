@@ -66,25 +66,25 @@
             ];
          };
 
-         nixosConfigurations.dev-box = nixpkgs-stable.lib.nixosSystem {
+         nixosConfigurations.dev-system = nixpkgs-stable.lib.nixosSystem {
             system = system;
             specialArgs = defaultModuleArgs;
             modules = [
                ./configuration.nix
-               ./hosts/dev-box/hardware-configuration.nix
-               ./hosts/dev-box/configuration.nix
+               ./hosts/dev-system/hardware-configuration.nix
+               ./hosts/dev-system/configuration.nix
                ./users/aundre/configuration.nix
             ];
          };
 
          #system for testing configs on vm before using on my main system
-         nixosConfigurations.dev-box-vm = nixpkgs-stable.lib.nixosSystem {
+         nixosConfigurations.dev-system-vm = nixpkgs-stable.lib.nixosSystem {
             system = system;
             specialArgs = defaultModuleArgs;
             modules = [
                ./configuration.nix
-               ./hosts/kube-node/hardware-configuration.nix
-               ./hosts/dev-box/configuration.nix
+               ./hosts/lab-node/hardware-configuration.nix
+               ./hosts/lab-node/configuration.nix
                ./users/aundre/configuration.nix
             ];
          };
@@ -105,14 +105,14 @@
 
          };
 
-         nixosConfigurations.kube-node = nixpkgs-stable.lib.nixosSystem {
+         nixosConfigurations.lab-node = nixpkgs-stable.lib.nixosSystem {
             system = system;
             specialArgs = defaultModuleArgs // {
                secrets = secrets;
             };
             modules = [
-               ./hosts/kube-node/hardware-configuration.nix
-               ./hosts/kube-node/configuration.nix
+               ./hosts/lab-node/hardware-configuration.nix
+               ./hosts/lab-node/configuration.nix
             ];
          };
 
